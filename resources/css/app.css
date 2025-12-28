@@ -1,0 +1,44 @@
+:root {
+    --telyu-maroon: #800000;
+    --telyu-maroon-hover: #660000;
+}
+
+.text-maroon { color: var(--telyu-maroon) !important; }
+.bg-maroon { background-color: var(--telyu-maroon) !important; }
+.border-maroon { border-color: var(--telyu-maroon) !important; }
+
+.btn-maroon {
+    background-color: var(--telyu-maroon);
+    color: white;
+    border: none;
+}
+.btn-maroon:hover {
+    background-color: var(--telyu-maroon-hover);
+    color: white;
+}
+
+.btn-outline-maroon {
+    color: var(--telyu-maroon);
+    border-color: var(--telyu-maroon);
+    background: transparent;
+}
+.btn-outline-maroon:hover {
+    background-color: #ffe6e6; /* Merah muda sangat pudar */
+    color: var(--telyu-maroon);
+    border-color: var(--telyu-maroon);
+}
+
+/* Efek Card Hover */
+.hover-card {
+    transition: all 0.3s ease;
+}
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+/* Form Focus Color */
+.form-control:focus, .form-select:focus {
+    border-color: var(--telyu-maroon);
+    box-shadow: 0 0 0 0.25rem rgba(128, 0, 0, 0.25);
+}
