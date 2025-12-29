@@ -12,11 +12,14 @@ class Menu extends Model
     protected $primaryKey = 'id_menu';
     protected $fillable = [
         'id_tenant',
+        'id_category',
         'id_category', // Ditambahkan
         'name',
         'price',
         'stock',
         'image',
+        'description',
+        'is_available' 
         // 'category', // Dihapus
         'description',
         'is_available' // Diubah dari status_available
@@ -36,4 +39,6 @@ class Menu extends Model
     {
         return $this->hasMany(Review::class, 'id_menu', 'id_menu');
     }
+}
+
 }
