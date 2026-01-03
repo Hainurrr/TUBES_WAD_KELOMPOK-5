@@ -19,6 +19,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+
+
+        // Bagikan notifikasi (database notifications) ke navbar
+        view()->composer('layouts.navbar', function ($view) {
+            $notifications = [];
+            if (auth()->check()) {
+                $notifications = auth()->user()->unreadNotifications;
+            }
+            $view->with('notifications', $notifications);
+        });
     }
 }
