@@ -83,4 +83,48 @@ class TenantOrderController extends Controller
 
         return view('tenant.orders.history', compact('orders', 'totalRevenue'));
     }
+
+    /**
+     * Export laporan penjualan ke PDF.
+     */
+    public function exportPdf(Request $request)
+    {
+        if (!Auth::user()->tenant) {
+            return redirect()->route('home')->with('error', 'Akun Anda tidak terhubung dengan Tenant manapun.');
+        }
+        $tenantId = Auth::user()->tenant->id_tenant;
+        
+        $query = Order::where('id_tenant', $tenantId)
+                      ->where('status', 'completed');
+
+        if ($request->has('start_date') && $request->start_date) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->has('end_date') && $request->end_date) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->get();
+        $totalRevenue = $orders->sum('total_price');
+        $tenant = Auth::user()->tenant;
+        
+        return view('tenant.orders.pdf', compact('orders', 'totalRevenue', 'tenant'));
+    }
+
+    /**
+     * Toggle status buka/tutup toko tenant.
+     */
+    public function updateTenantStatus(Request $request)
+    {
+        if (!Auth::user()->tenant) {
+            return response()->json(['success' => false, 'message' => 'Tenant tidak ditemukan.'], 403);
+        }
+
+        $tenant = Auth::user()->tenant;
+        $tenant->is_open = $request->is_open;
+        $tenant->save();
+
+        return response()->json(['success' => true, 'message' => 'Status toko berhasil diperbarui.']);
+    }
 }
