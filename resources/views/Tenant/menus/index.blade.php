@@ -109,7 +109,7 @@
                 // Cek apakah hari ini libur
                 // Logika sederhana: Jika API mengembalikan tanggal yang sama dengan hari ini
                 const today = new Date().toISOString().split('T')[0];
-                const isHoliday = data.some(holiday => holiday.date === today);
+                const isHoliday = data.some(holiday => holiday.tanggal === today);
 
                 if (isHoliday) {
                     document.getElementById('holidayAlert').classList.remove('d-none');

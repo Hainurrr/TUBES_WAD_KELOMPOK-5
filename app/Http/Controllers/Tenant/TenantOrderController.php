@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 
@@ -108,8 +109,27 @@ class TenantOrderController extends Controller
         $orders = $query->orderBy('created_at', 'desc')->get();
         $totalRevenue = $orders->sum('total_price');
         $tenant = Auth::user()->tenant;
+
+        // Ambil Data Hari Libur (Sisi Server) untuk PDF
+        $holidays = [];
+        try {
+            $year = date('Y'); // Gunakan tahun saat ini
+            // Gunakan timeout 3 detik agar tidak loading lama jika API bermasalah
+            $response = Http::timeout(3)->get("https://api-harilibur.vercel.app/api?year={$year}");
+            
+            if ($response->successful()) {
+                foreach ($response->json() as $h) {
+                    // Logika normalisasi tanggal (sama seperti JS: YYYY-MM-DD)
+                    // Kita gunakan fungsi date() untuk memastikan padding (contoh: 2026-1-1 menjadi 2026-01-01)
+                    $dateKey = date('Y-m-d', strtotime($h['holiday_date']));
+                    $holidays[$dateKey] = $h['holiday_name'];
+                }
+            }
+        } catch (\Exception $e) {
+            // Abaikan error API saat generate PDF agar fungsi utama tetap jalan
+        }
         
-        return view('tenant.orders.pdf', compact('orders', 'totalRevenue', 'tenant'));
+        return view('tenant.orders.pdf', compact('orders', 'totalRevenue', 'tenant', 'holidays'));
     }
 
     /**

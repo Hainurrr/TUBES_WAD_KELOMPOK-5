@@ -43,7 +43,18 @@
             @foreach($orders as $index => $order)
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                <td>
+                    {{ $order->created_at->format('d/m/Y H:i') }}
+                    @php
+                        $dateKey = $order->created_at->format('Y-m-d');
+                    @endphp
+                    @if(isset($holidays[$dateKey]))
+                        <br>
+                        <span style="color: #0dcaf0; font-size: 10px;">
+                            (Libur: {{ $holidays[$dateKey] }})
+                        </span>
+                    @endif
+                </td>
                 <td>
                     @foreach($order->orderDetails as $detail)
                         {{ $detail->menu->name }} (x{{ $detail->qty }})<br>

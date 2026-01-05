@@ -89,36 +89,52 @@
     .text-maroon { color: #800000; }
 </style>
 
- <script>
+<script>
     document.addEventListener('DOMContentLoaded', function() {
         const year = new Date().getFullYear();
-        // API Publik untuk Hari Libur Indonesia
         const apiUrl = `https://api-harilibur.vercel.app/api?year=${year}`;
+
+        // Helper: Normalisasi tanggal agar selalu YYYY-MM-DD (misal: 2026-1-1 jadi 2026-01-01)
+        const normalizeDate = (dateStr) => {
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            const y = parts[0];
+            const m = parts[1].padStart(2, '0');
+            const d = parts[2].padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        };
 
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
-                // Mapping hari libur: { "2024-12-25": "Hari Natal", ... }
                 const holidays = {};
+                
+                // Mapping data API dengan normalisasi tanggal
                 data.forEach(h => {
-                    holidays[h.holiday_date] = h.holiday_name;
+                    const cleanDate = normalizeDate(h.holiday_date);
+                    holidays[cleanDate] = h.holiday_name;
                 });
 
-                // Cek setiap tanggal pada baris
+                // Cek setiap baris tabel
                 document.querySelectorAll('.order-date').forEach(el => {
-                    const dateStr = el.getAttribute('data-date'); // YYYY-MM-DD
+                    const dateStr = el.getAttribute('data-date'); // Format di HTML: YYYY-MM-DD
+                    
                     if (holidays[dateStr]) {
-                        // Buat Badge
+                        // Hapus badge lama jika ada (untuk menghindari duplikasi saat refresh manual)
+                        const oldBadge = el.querySelector('.badge-holiday');
+                        if(oldBadge) oldBadge.remove();
+
+                        // Render Badge Baru
                         const badge = document.createElement('span');
-                        badge.className = 'badge bg-info text-dark ms-2';
-                        badge.style.fontSize = '0.7em';
-                        badge.innerText = '🏝️ ' + holidays[dateStr]; // Holiday Name
-                        badge.title = holidays[dateStr];
+                        badge.className = 'badge bg-info text-dark ms-2 badge-holiday';
+                        badge.style.fontSize = '0.75em';
+                        badge.innerHTML = `<i class="bi bi-calendar-event me-1"></i> ${holidays[dateStr]}`;
+                        badge.title = 'Hari Libur Nasional';
                         el.appendChild(badge);
                     }
                 });
             })
-            .catch(err => console.error('Failed to fetch holidays', err));
+            .catch(err => console.error('Gagal mengambil data hari libur:', err));
     });
 </script>
 @endsection
