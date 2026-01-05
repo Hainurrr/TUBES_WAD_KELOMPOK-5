@@ -32,7 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
 use App\Http\Controllers\TenantController;
-// Gunakan AdminController untuk Dashboard
+// AdminController untuk Dashboard
 use App\Http\Controllers\AdminController; 
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
