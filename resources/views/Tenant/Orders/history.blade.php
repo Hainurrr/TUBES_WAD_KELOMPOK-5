@@ -89,7 +89,7 @@
     .text-maroon { color: #800000; }
 </style>
 
-<!-- <script>
+ <script>
     document.addEventListener('DOMContentLoaded', function() {
         const year = new Date().getFullYear();
         // API Publik untuk Hari Libur Indonesia
@@ -121,4 +121,4 @@
             .catch(err => console.error('Failed to fetch holidays', err));
     });
 </script>
-@endsection -->
+@endsection
