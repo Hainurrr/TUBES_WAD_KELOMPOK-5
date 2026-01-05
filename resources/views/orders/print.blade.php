@@ -60,6 +60,17 @@
         <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
     </div>
 
+    <!-- QR Code untuk Verifikasi Pesanan (API: goqr.me) -->
+    <div class="text-center mb-4">
+        <p class="fw-bold mb-2">Scan QR untuk Verifikasi:</p>
+        @php
+            $qrData = "TELYUCAN|ORDER#" . $order->id_order . "|" . $order->created_at->format('Ymd') . "|Rp" . number_format($order->total_price, 0, ',', '.');
+            $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=" . urlencode($qrData);
+        @endphp
+        <img src="{{ $qrUrl }}" alt="QR Code Order #{{ $order->id_order }}" style="width: 120px; height: 120px;">
+        <p style="font-size: 10px; margin-top: 5px;">Order #{{ $order->id_order }}</p>
+    </div>
+
     <div class="text-center border-bottom">
         <p class="fw-bold mb-2">Status: {{ strtoupper($order->status) }}</p>
         <p class="mb-2">Terima Kasih!</p>
