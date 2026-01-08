@@ -17,6 +17,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/cart', [OrderController::class, 'cart'])->name('cart.index');
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('cart.checkout');
     Route::post('/checkout/store', [OrderController::class, 'storeOrder'])->name('order.store');
+
+    // Profile Routes
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });
 Route::get('/tenant/{id}', [OrderController::class, 'showTenant'])->name('tenant.show')->where('id', '[0-9]+');
 

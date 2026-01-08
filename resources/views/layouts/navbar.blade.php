@@ -102,8 +102,8 @@
 
                     <div class="dropdown">
                         <button class="btn border-0 p-0" type="button" data-bs-toggle="dropdown">
-                            <img src="https://ui-avatars.com/api/?name={{ Auth::user()->name }}&background=800000&color=fff" 
-                                 class="rounded-circle border" width="40" height="40" alt="Avatar">
+                            <img src="{{ Auth::user()->avatar && Auth::user()->avatar !== 'default_avatar.png' ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=800000&color=fff' }}" 
+                                 class="rounded-circle border object-fit-cover" width="40" height="40" alt="Avatar">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
                             <li class="px-3 py-2">
@@ -111,7 +111,7 @@
                                 <small class="text-secondary" style="font-size: 11px;">{{ Auth::user()->email }}</small>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear me-2"></i> Profile & Settings</a></li>
                             @if(Auth::user()->role === 'admin')
                                 <li><a class="dropdown-item" href="{{ route('admin.users.index') }}"><i class="bi bi-people me-2"></i> Kelola Akun</a></li>
                             @endif
@@ -123,7 +123,6 @@
                             @if(Auth::user()->role !== 'admin')
                                 <li><a class="dropdown-item" href="{{ route('orders.history') }}"><i class="bi bi-clock-history me-2"></i> Riwayat Pesanan</a></li>
                             @endif
-                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i> Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
