@@ -21,7 +21,7 @@
 
         <div class="collapse navbar-collapse justify-content-between" id="navbarContent">
             <div class="mx-auto d-none d-md-block w-50">
-                <form action="{{ route('search') }}" method="GET" class="position-relative">
+                <form action="{{ route('menus.index') }}" method="GET" class="position-relative">
                     <input type="text" name="q" 
                            class="form-control rounded-pill ps-5 border-secondary-subtle" 
                            placeholder="Cari makanan, minuman, atau tenant..." 
