@@ -35,9 +35,9 @@ class OrderController extends Controller
 
         // Filter berdasarkan pencarian
         if($request->has('q') && $request->q != '') {
-             $query->where('name', 'like', '%' . $request->q . '%')
+             $query->where('name', 'ilike', '%' . $request->q . '%')
                    ->orWhereHas('tenant', function($q) use ($request) {
-                       $q->where('name', 'like', '%' . $request->q . '%');
+                       $q->where('name', 'ilike', '%' . $request->q . '%');
                    });
         }
 
@@ -97,9 +97,9 @@ class OrderController extends Controller
 
         // Filter berdasarkan pencarian
         if($request->has('q') && $request->q != '') {
-             $query->where('name', 'like', '%' . $request->q . '%')
+             $query->where('name', 'ilike', '%' . $request->q . '%')
                    ->orWhereHas('tenant', function($q) use ($request) {
-                       $q->where('name', 'like', '%' . $request->q . '%');
+                       $q->where('name', 'ilike', '%' . $request->q . '%');
                    });
         }
 
