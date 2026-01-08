@@ -32,7 +32,7 @@ class TenantOrderController extends Controller
 
         $tenant = Auth::user()->tenant;
 
-        return view('tenant.orders.index', compact('orders', 'tenant'));
+        return view('tenant.kitchen.index', compact('orders', 'tenant'));
     }
 
     /**
@@ -88,7 +88,7 @@ class TenantOrderController extends Controller
         // Ambil menu untuk dropdown tambah manual
         $menus = Menu::where('id_tenant', $tenantId)->where('is_available', true)->get();
 
-        return view('tenant.orders.history', compact('orders', 'totalRevenue', 'menus'));
+        return view('tenant.kitchen.history', compact('orders', 'totalRevenue', 'menus'));
     }
 
     /**
@@ -135,7 +135,7 @@ class TenantOrderController extends Controller
             // Abaikan error API saat generate PDF agar fungsi utama tetap jalan
         }
         
-        return view('tenant.orders.pdf', compact('orders', 'totalRevenue', 'tenant', 'holidays'));
+        return view('tenant.kitchen.pdf', compact('orders', 'totalRevenue', 'tenant', 'holidays'));
     }
 
     /**
