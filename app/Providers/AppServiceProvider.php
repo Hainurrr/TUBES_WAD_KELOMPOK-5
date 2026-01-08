@@ -21,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
     {
 
 
+        if($this->app->environment('production') || $this->app->environment('local')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
         // Bagikan notifikasi (database notifications) ke navbar
         view()->composer('layouts.navbar', function ($view) {
             $notifications = [];
