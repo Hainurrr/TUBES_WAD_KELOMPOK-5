@@ -61,4 +61,20 @@ class ProfileController extends Controller
 
         return redirect()->route('profile.edit')->with('success', 'Profil berhasil diperbarui!');
     }
+
+    /**
+     * Menyajikan file avatar secara langsung melalui PHP.
+     * Mengatasi masalah 404 pada hosting yang membatasi akses langsung file public/uploads.
+     */
+    public function getAvatar($filename)
+    {
+        $path = public_path('uploads/avatars/' . $filename);
+
+        if (!file_exists($path)) {
+            // Fallback jika file fisik tidak ketemu (misal karena ephemeral storage Heroku reset)
+            return redirect('https://ui-avatars.com/api/?name=User&background=800000&color=fff');
+        }
+
+        return response()->file($path);
+    }
 }

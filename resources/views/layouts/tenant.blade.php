@@ -79,7 +79,7 @@
                         <!-- Profile Dropdown -->
                         <div class="dropdown">
                             <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ Auth::user()->avatar && Auth::user()->avatar !== 'default_avatar.png' ? '/uploads/' . Auth::user()->avatar : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=800000&color=fff' }}" alt="" width="32" height="32" class="rounded-circle me-2 object-fit-cover">
+                                <img src="{{ Auth::user()->avatar && Auth::user()->avatar !== 'default_avatar.png' ? route('profile.avatar', basename(Auth::user()->avatar)) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=800000&color=fff' }}" alt="" width="32" height="32" class="rounded-circle me-2 object-fit-cover">
                                 <strong class="d-none d-md-inline">{{ Auth::user()->name ?? 'Tenant User' }}</strong>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
