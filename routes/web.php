@@ -21,7 +21,6 @@ Route::middleware(['auth'])->group(function () {
     // Profile Routes
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/avatar/{filename}', [App\Http\Controllers\ProfileController::class, 'getAvatar'])->name('profile.avatar');
 });
 Route::get('/tenant/{id}', [OrderController::class, 'showTenant'])->name('tenant.show')->where('id', '[0-9]+');
 
