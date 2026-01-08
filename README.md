@@ -1,148 +1,110 @@
 # TelyuCan - Kantin Digital Telkom University
 
-Aplikasi web untuk manajemen kantin (TelyuCanteen) berbasis Laravel 11.
+[![Live Demo](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge&logo=heroku&logoColor=white)](https://www.telyucan.app)
 
-## 🛠️ Tech Stack
+Aplikasi web untuk manajemen kantin (TelyuCanteen) berbasis Laravel 11. Mempermudah mahasiswa memesan makanan dan membantu tenant mengelola pesanan.
 
-| Teknologi | Versi |
-|-----------|-------|
-| PHP | >= 8.2 |
-| Laravel | 11.x |
-| MySQL / MariaDB | 8.0+ |
-| Node.js | 18+ |
-| Vite | 5.x |
-| Bootstrap | 5.3 |
+🔗 **Link Website:** [https://www.telyucan.app](https://www.telyucan.app)
+
+## 📱 Fitur Utama
+
+### 👤 Pelanggan (Customer)
+- **Menu Browsing**: Cari makanan berdasarkan nama, kategori, atau tenant favorit.
+- **Keranjang & Checkout**: Pesan dari beberapa tenant sekaligus dalam satu transaksi (Split Order).
+- **Riwayat Pesanan**: Pantau status pesanan secara real-time (Pending -> Cooking -> Ready -> Completed).
+- **Notifikasi Live**: Dapatkan notifikasi saat status pesanan berubah.
+- **Review & Rating**: Beri ulasan dan bintang untuk menu yang sudah dibeli.
+- **Profile Settings**: Ubah foto profil, nama, dan password.
+
+### 🏪 Tenant (Penjual)
+- **Kitchen Dashboard**: Kelola pesanan masuk, ubah status pesanan (Terima/Tolak, Masak, Siap).
+- **Manajemen Menu**: Tambah, edit, hapus menu, dan atur stok/ketersediaan.
+- **Buka/Tutup Toko**: Atur status operasional toko dengan satu klik.
+- **Laporan PDF**: Download laporan riwayat penjualan dalam format PDF.
+
+### 🛡️ Admin
+- **Manajemen Tenant**: Tambah dan kelola data tenant kantin.
+- **Manajemen User**: Kelola akun pengguna (Customer/Tenant).
+- **Moderasi Review**: Hapus review yang tidak pantas.
+- **Laporan Tenant PDF**: Download daftar tenant dan performanya.
 
 ---
 
-## 📋 Persyaratan Sistem
+## 🔐 Akun Testing (Default)
 
-Pastikan perangkat Anda memiliki:
-- **PHP** >= 8.2 (dengan ekstensi: `pdo_mysql`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`)
-- **Composer** >= 2.0
-- **Node.js** >= 18 & **NPM** >= 9
-- **MySQL** / **MariaDB** (Database Server)
-- **Git**
+Gunakan akun berikut untuk mencoba aplikasi:
+
+| Role | Email | Password |
+|------|-------|----------|
+| **Admin** | `admin@gmail.com` | `password` |
+| **Tenant 1 (TULT)** | `tult@gmail.com` | `password` |
+| **Tenant 2 (GKU)** | `gku@gmail.com` | `password` |
+| **Tenant 3 (Pujasera)** | `pujasera@gmail.com` | `password` |
+| **Customer** | `customer@gmail.com` | `password` |
 
 ---
 
-## 🚀 Panduan Instalasi
+## 🛠️ Teknologi yang Digunakan
 
-### 1. Clone Repository
+| Kategori | Teknologi |
+|----------|-----------|
+| **Backend** | PHP 8.2, Laravel 11 |
+| **Frontend** | Blade Templates, Bootstrap 5 |
+| **Database** | MySQL (Local), PostgreSQL (Heroku) |
+| **Server** | Apache (Heroku Dyno) |
+| **Assets** | Vite, NPM |
+
+---
+
+## 🚀 Panduan Instalasi (Lokal)
+
+Jika ingin menjalankan di komputer sendiri (Localhost):
+
+### 1. Clone & Install
 ```bash
 git clone https://github.com/WAD-kelompok5/WAD_kelompok5.github.io.git
 cd WAD_kelompok5.github.io
-```
-
-### 2. Install Dependensi
-```bash
 composer install
 npm install
 ```
 
-### 3. Konfigurasi Environment
+### 2. Konfigurasi Environment
+Salin file `.env.example` ke `.env` dan atur database:
 ```bash
 cp .env.example .env
-```
-
-Edit file `.env` dan sesuaikan konfigurasi database:
-```ini
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=telyucan
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-### 4. Generate Application Key
-```bash
 php artisan key:generate
 ```
+Pastikan database MySQL bernama `telyucan` sudah dibuat.
 
-### 5. Buat Database
-Buat database baru di MySQL/PHPMyAdmin dengan nama `telyucan`:
-```sql
-CREATE DATABASE telyucan;
-```
-
-### 6. Migrasi & Seeding Database
+### 3. Migrasi & Seeding
+Isi database dengan data awal:
 ```bash
 php artisan migrate:fresh --seed
-```
-
-### 7. Setup Storage Link
-```bash
 php artisan storage:link
 ```
 
----
-
-## ▶️ Menjalankan Aplikasi
-
-Buka **2 Terminal** secara bersamaan:
-
-**Terminal 1 - Backend Server:**
+### 4. Jalankan Aplikasi
+Buka 2 terminal:
 ```bash
+# Terminal 1
 php artisan serve
-```
-> Akses di: http://127.0.0.1:8000
 
-**Terminal 2 - Frontend (Vite):**
-```bash
+# Terminal 2
 npm run dev
 ```
+Akses di: `http://127.0.0.1:8000`
 
 ---
 
-## 🔐 Akun Default (Setelah Seeding)
+## ☁️ Deployment (Heroku)
 
-| Role | Email | Password |
-|------|-------|----------|
-| **Admin** | admin@gmail.com | password |
-| **Tenant (TULT)** | tult@gmail.com | password |
-| **Tenant (GKU)** | gku@gmail.com | password |
-| **Tenant (Pujasera)** | pujasera@gmail.com | password |
-| **Customer** | customer@gmail.com | password |
+Aplikasi ini sudah dikonfigurasi untuk Heroku dengan:
+- **Procfile**: Mengatur Apache web server.
+- **PostgreSQL**: Menggunakan add-on `heroku-postgresql`.
+- **Custom Domain**: `www.telyucan.app` (HTTPS enabled).
 
 ---
 
-## 📱 Fitur Utama
+## 👥 Tim Pengembang (Kelompok 5)
 
-### Pelanggan (Customer)
-- ✅ Browse menu dari berbagai tenant
-- ✅ Filter berdasarkan kategori & lokasi
-- ✅ Keranjang belanja & checkout
-- ✅ Riwayat pesanan
-- ✅ Beri review setelah pesanan selesai
-
-### Tenant
-- ✅ Dashboard Kitchen Display
-- ✅ Kelola menu (CRUD)
-- ✅ Update status pesanan
-- ✅ Toggle Buka/Tutup toko
-- ✅ Lihat review pelanggan
-
-### Admin
-- ✅ Dashboard statistik
-- ✅ Kelola tenant (CRUD)
-- ✅ Kelola user
-- ✅ Moderasi review
-
----
-
-## 🛠️ Troubleshooting
-
-| Masalah | Solusi |
-|---------|--------|
-| Gambar tidak muncul | `php artisan storage:link` |
-| Vendor not found | `composer install` |
-| Vite manifest not found | Pastikan `npm run dev` berjalan |
-| SQLSTATE Connection refused | Pastikan MySQL server aktif |
-| 403 Forbidden di Admin/Tenant | Login dengan akun role yang sesuai |
-
----
-
-## 📄 Lisensi
-
-Proyek ini dibuat untuk keperluan tugas mata kuliah **Web Application Development** - Telkom University.
+Dibuat untuk memenuhi Tugas Besar mata kuliah **Web Application Development**.
