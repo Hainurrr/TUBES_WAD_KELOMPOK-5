@@ -7,8 +7,8 @@ use App\Models\Menu;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Cloudinary\Cloudinary;
 
 class MenuController extends Controller
 {
@@ -58,7 +58,13 @@ class MenuController extends Controller
 
         $path = null;
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('menus', 'public');
+            // Upload ke Cloudinary
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'menus']
+            );
+            $path = $result['secure_url'];
         }
 
         Menu::create([
@@ -115,11 +121,13 @@ class MenuController extends Controller
 
         // Upload gambar baru jika ada
         if ($request->hasFile('image')) {
-            // Hapus gambar lama
-            if ($menu->image) {
-                Storage::disk('public')->delete($menu->image);
-            }
-            $data['image'] = $request->file('image')->store('menus', 'public');
+            // Upload ke Cloudinary
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'menus']
+            );
+            $data['image'] = $result['secure_url'];
         }
 
         $menu->update($data);
@@ -135,10 +143,7 @@ class MenuController extends Controller
         $tenant = Auth::user()->tenant;
         $menu = Menu::where('id_tenant', $tenant->id_tenant)->findOrFail($id);
 
-        if ($menu->image) {
-            Storage::disk('public')->delete($menu->image);
-        }
-
+        // Gambar di Cloudinary tidak dihapus (tetap tersimpan di cloud)
         $menu->delete();
 
         return redirect()->route('tenant.menus.index')->with('success', 'Menu berhasil dihapus.');

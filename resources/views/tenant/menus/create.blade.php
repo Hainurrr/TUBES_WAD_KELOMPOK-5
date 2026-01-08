@@ -24,7 +24,7 @@
                             <div class="col-12 text-center mb-3">
                                 <div class="position-relative d-inline-block">
                                     <img id="imagePreview" 
-                                         src="{{ isset($menu) && $menu->image ? asset('storage/' . $menu->image) : 'https://placehold.co/300x200?text=Upload+Foto' }}" 
+                                         src="{{ isset($menu) && $menu->image ? (Str::startsWith($menu->image, 'http') ? $menu->image : asset('storage/' . $menu->image)) : 'https://placehold.co/300x200?text=Upload+Foto' }}" 
                                          class="rounded shadow-sm object-fit-cover border" 
                                          style="width: 300px; height: 200px;" 
                                          alt="Preview">

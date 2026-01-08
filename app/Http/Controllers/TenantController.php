@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Storage;
 use App\Models\User;
+use Cloudinary\Cloudinary;
 
 class TenantController extends Controller
 {
@@ -72,8 +72,12 @@ class TenantController extends Controller
 
         // Upload gambar banner jika ada
         if ($request->hasFile('banner_image')) {
-            $path = $request->file('banner_image')->store('tenants', 'public');
-            $data['banner_image'] = $path;
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('banner_image')->getRealPath(),
+                ['folder' => 'tenants']
+            );
+            $data['banner_image'] = $result['secure_url'];
         }
 
         \DB::table('tenants')->insert($data);
@@ -138,12 +142,13 @@ class TenantController extends Controller
 
         // Update gambar banner jika ada file baru
         if ($request->hasFile('banner_image')) {
-            // Hapus gambar lama jika ada
-            if ($tenant->banner_image && Storage::disk('public')->exists($tenant->banner_image)) {
-                Storage::disk('public')->delete($tenant->banner_image);
-            }
-            $path = $request->file('banner_image')->store('tenants', 'public');
-            $data['banner_image'] = $path;
+            // Upload ke Cloudinary
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('banner_image')->getRealPath(),
+                ['folder' => 'tenants']
+            );
+            $data['banner_image'] = $result['secure_url'];
         }
 
         \DB::table('tenants')->where('id_tenant', $id)->update($data);

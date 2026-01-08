@@ -107,7 +107,7 @@
                             <div class="card-body p-4 text-center">
                                 @if($tenant->banner_image)
                                     <div class="mb-3">
-                                        <img src="{{ asset('storage/' . $tenant->banner_image) }}" alt="Current Banner" class="rounded-3 shadow-sm object-fit-cover" style="height: 150px; width: 100%;">
+                                        <img src="{{ Str::startsWith($tenant->banner_image, 'http') ? $tenant->banner_image : asset('storage/' . $tenant->banner_image) }}" alt="Current Banner" class="rounded-3 shadow-sm object-fit-cover" style="height: 150px; width: 100%;">
                                         <div class="small text-muted mt-2">Banner Saat Ini</div>
                                     </div>
                                 @else

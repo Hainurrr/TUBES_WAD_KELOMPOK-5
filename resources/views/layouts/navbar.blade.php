@@ -102,7 +102,7 @@
 
                     <div class="dropdown">
                         <button class="btn border-0 p-0" type="button" data-bs-toggle="dropdown">
-                            <img src="{{ Auth::user()->avatar && Auth::user()->avatar !== 'default_avatar.png' ? asset('storage/' . Auth::user()->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=800000&color=fff' }}" 
+                            <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=800000&color=fff' }}" 
                                  class="rounded-circle border object-fit-cover" width="40" height="40" alt="Avatar">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">

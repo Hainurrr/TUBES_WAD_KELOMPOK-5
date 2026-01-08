@@ -22,17 +22,33 @@
 
                         <div class="text-center mb-4">
                             <div class="position-relative d-inline-block">
-                                <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}" 
+                                <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}" 
                                      alt="Avatar" 
                                      class="rounded-circle object-fit-cover border shadow-sm"
-                                     style="width: 120px; height: 120px;">
-                                <label for="avatar" class="position-absolute bottom-0 end-0 bg-maroon text-white rounded-circle p-2 cursor-pointer shadow-sm" style="cursor: pointer;">
+                                     style="width: 120px; height: 120px;"
+                                     id="avatarPreview">
+                                <label for="avatar" class="position-absolute bottom-0 end-0 bg-maroon text-white rounded-circle p-2 shadow-sm" style="cursor: pointer;">
                                     <i class="bi bi-camera-fill"></i>
-                                    <input type="file" name="avatar" id="avatar" class="d-none" accept="image/*">
+                                    <input type="file" name="avatar" id="avatar" class="d-none" accept="image/*" onchange="previewImage(this)">
                                 </label>
                             </div>
                             <div class="form-text mt-2">Klik ikon kamera untuk mengganti foto (Max 2MB)</div>
+                            @error('avatar')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
+
+                        <script>
+                            function previewImage(input) {
+                                if (input.files && input.files[0]) {
+                                    var reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        document.getElementById('avatarPreview').src = e.target.result;
+                                    }
+                                    reader.readAsDataURL(input.files[0]);
+                                }
+                            }
+                        </script>
 
                         <div class="row g-3">
                             <div class="col-md-6">

@@ -52,7 +52,7 @@
                             <td class="ps-4">
                                 <div class="d-flex align-items-center">
                                     @if($tenant->banner_image)
-                                        <img src="{{ asset('storage/' . $tenant->banner_image) }}" alt="{{ $tenant->name }}" class="rounded-3 object-fit-cover shadow-sm me-3" width="60" height="60">
+                                        <img src="{{ Str::startsWith($tenant->banner_image, 'http') ? $tenant->banner_image : asset('storage/' . $tenant->banner_image) }}" alt="{{ $tenant->name }}" class="rounded-3 object-fit-cover shadow-sm me-3" width="60" height="60">
                                     @else
                                         <div class="bg-secondary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center text-secondary small me-3" style="width: 60px; height: 60px;">
                                             <i class="bi bi-image"></i>

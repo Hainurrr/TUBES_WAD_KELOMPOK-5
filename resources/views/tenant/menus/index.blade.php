@@ -44,7 +44,7 @@
                 <div class="card h-100 border-0 shadow-sm hover-card">
                     <div class="position-relative">
                         @if($menu->image)
-                            <img src="{{ asset('storage/' . $menu->image) }}" class="card-img-top object-fit-cover" alt="{{ $menu->name }}" style="height: 200px;">
+                            <img src="{{ Str::startsWith($menu->image, 'http') ? $menu->image : asset('storage/' . $menu->image) }}" class="card-img-top object-fit-cover" alt="{{ $menu->name }}" style="height: 200px;">
                         @else
                             <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center text-secondary" style="height: 200px;">
                                 <i class="bi bi-image fs-1"></i>

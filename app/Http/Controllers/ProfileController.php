@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Cloudinary\Cloudinary;
 
 class ProfileController extends Controller
 {
@@ -37,15 +37,19 @@ class ProfileController extends Controller
         $user->email = $request->email;
         $user->identity_number = $request->identity_number;
 
-        // Menangani Unggahan Avatar
+        // Upload ke Cloudinary menggunakan SDK langsung
         if ($request->hasFile('avatar')) {
-            // Hapus avatar lama jika ada dan bukan avatar default
-            if ($user->avatar && $user->avatar !== 'default_avatar.png') {
-                Storage::delete('public/' . $user->avatar);
-            }
-
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar = $path;
+            // Inisialisasi Cloudinary dengan CLOUDINARY_URL dari Heroku
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+            
+            // Upload file
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('avatar')->getRealPath(),
+                ['folder' => 'avatars']
+            );
+            
+            // Simpan URL aman ke database
+            $user->avatar = $result['secure_url'];
         }
 
         // Menangani Pembaruan Password

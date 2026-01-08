@@ -191,8 +191,7 @@
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                // Tampilkan log di console
-                console.log(data.message);
+                // Status berhasil diubah
             } else {
                 alert('Gagal mengubah status toko');
                 checkbox.checked = !checkbox.checked; // Revert
