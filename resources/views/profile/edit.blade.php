@@ -22,7 +22,7 @@
 
                         <div class="text-center mb-4">
                             <div class="position-relative d-inline-block">
-                                <img src="{{ $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}" 
+                                <img src="{{ $user->avatar && $user->avatar !== 'default_avatar.png' ? '/storage/' . $user->avatar : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) }}"
                                      alt="Avatar" 
                                      class="rounded-circle object-fit-cover border shadow-sm"
                                      style="width: 120px; height: 120px;"
