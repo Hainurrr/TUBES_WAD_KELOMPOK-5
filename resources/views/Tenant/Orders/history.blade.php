@@ -3,11 +3,15 @@
 @section('content')
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-maroon fw-bold">📜 Riwayat Penjualan</h2>
-        <a href="{{ route('tenant.orders.pdf', request()->query()) }}" target="_blank" class="btn btn-outline-danger">
-            <i class="bi bi-printer"></i> Cetak Laporan
-        </a>
-    </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#manualOrderModal">
+                    <i class="bi bi-plus-circle"></i> Tambah Manual
+                </button>
+                <a href="{{ route('tenant.orders.pdf', request()->query()) }}" target="_blank" class="btn btn-outline-danger">
+                    <i class="bi bi-printer"></i> Cetak Laporan
+                </a>
+            </div>
+        </div>
 
     <!-- Summary Card -->
     <div class="row mb-4">
@@ -53,6 +57,7 @@
                         <th>Pelanggan</th>
                         <th>Menu</th>
                         <th class="text-end">Total</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,19 +68,29 @@
                                 {{ $order->created_at->format('d M Y H:i') }}
                                 <!-- Badge Holiday will be inserted here by JS -->
                             </td>
-                            <td>{{ $order->user->name ?? 'Guest' }}</td>
+                            <td>{{ $order->user->name ?? 'Walk-in / Manual' }}</td>
                             <td class="text-start">
                                 <ul class="list-unstyled mb-0 small">
                                     @foreach($order->orderDetails as $detail)
-                                        <li>- {{ $detail->menu->name }} (x{{ $detail->qty }})</li>
+                                        <li>- {{ $detail->menu->name ?? 'Menu Terhapus' }} (x{{ $detail->qty }})</li>
                                     @endforeach
                                 </ul>
                             </td>
                             <td class="text-end fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                            <td>
+                                <!-- Tombol Hapus (Hanya untuk Admin/Tenant yang berhak, misal semua tenant boleh hapus history mereka sendiri) -->
+                                <form action="{{ route('tenant.orders.destroy', $order->id_order) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus riwayat pesanan ini? Data tidak bisa dikembalikan.');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
+                                </form>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4 text-muted">Belum ada data penjualan.</td>
+                            <td colspan="6" class="text-center py-4 text-muted">Belum ada data penjualan.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -83,6 +98,74 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Tambah Pesanan Manual -->
+<div class="modal fade" id="manualOrderModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{{ route('tenant.orders.storeManual') }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title">Tambah Pesanan Manual (Offline)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Transaksi</label>
+                        <input type="date" name="transaction_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label d-flex justify-content-between">
+                            <span>Item Menu</span>
+                            <button type="button" class="btn btn-xs btn-primary py-0" onclick="addManualItem()">+ Tambah Item</button>
+                        </label>
+                        <div id="manual-items-container">
+                            <div class="row g-2 mb-2 item-row">
+                                <div class="col-8">
+                                    <select name="items[0][id_menu]" class="form-select" required>
+                                        <option value="">Pilih Menu...</option>
+                                        @foreach($menus as $menu)
+                                            <option value="{{ $menu->id_menu }}">
+                                                {{ $menu->name }} - Rp {{ number_format($menu->price, 0, ',', '.') }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-4">
+                                    <input type="number" name="items[0][qty]" class="form-control" placeholder="Qty" min="1" value="1" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">Simpan Pesanan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let itemIndex = 1;
+    function addManualItem() {
+        const container = document.getElementById('manual-items-container');
+        const firstRow = container.querySelector('.item-row');
+        const newRow = firstRow.cloneNode(true);
+        
+        // Update name attributes using Regex or simple replacement
+        newRow.innerHTML = newRow.innerHTML.replace(/items\[0\]/g, `items[${itemIndex}]`);
+        
+        // Reset values
+        newRow.querySelector('select').value = "";
+        newRow.querySelector('input').value = "1";
+        
+        container.appendChild(newRow);
+        itemIndex++;
+    }
+</script>
 
 <style>
     .bg-maroon { background-color: #800000; }

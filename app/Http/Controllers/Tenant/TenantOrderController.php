@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Order;
+use App\Models\OrderDetail;
+use App\Models\Menu;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TenantOrderController extends Controller
 {
@@ -82,7 +85,10 @@ class TenantOrderController extends Controller
         $orders = $query->orderBy('created_at', 'desc')->get();
         $totalRevenue = $orders->sum('total_price');
 
-        return view('tenant.orders.history', compact('orders', 'totalRevenue'));
+        // Ambil menu untuk dropdown tambah manual
+        $menus = Menu::where('id_tenant', $tenantId)->where('is_available', true)->get();
+
+        return view('tenant.orders.history', compact('orders', 'totalRevenue', 'menus'));
     }
 
     /**
@@ -146,5 +152,83 @@ class TenantOrderController extends Controller
         $tenant->save();
 
         return response()->json(['success' => true, 'message' => 'Status toko berhasil diperbarui.']);
+    }
+
+    /**
+     * Menyimpan pesanan manual (Walk-in) ke riwayat.
+     */
+    public function storeManualHistory(Request $request)
+    {
+        if (!Auth::user()->tenant) {
+            return redirect()->back()->with('error', 'Tenant tidak ditemukan.');
+        }
+
+        $request->validate([
+            'transaction_date' => 'required|date',
+            'items' => 'required|array',
+            'items.*.id_menu' => 'required|exists:menus,id_menu',
+            'items.*.qty' => 'required|integer|min:1',
+        ]);
+
+        $tenantId = Auth::user()->tenant->id_tenant;
+        
+        DB::beginTransaction();
+        try {
+            // Hitung total harga
+            $totalPrice = 0;
+            $orderStart = Order::where('id_tenant', $tenantId)->count() + 1;
+            $transactionGroup = 'TRX-' . $tenantId . '-' . time() . '-' . $orderStart;
+
+            // Buat Order (Tanpa User / Walk-in)
+            $order = new Order();
+            $order->id_user = null; // Walk-in
+            $order->id_tenant = $tenantId;
+            $order->transaction_group = $transactionGroup;
+            $order->status = 'completed'; // Langsung selesai
+            $order->total_price = 0; // Update nanti
+            $order->created_at = $request->transaction_date . ' ' . date('H:i:s'); // Pakai jam sekarang
+            $order->updated_at = now();
+            $order->save();
+
+            foreach ($request->items as $item) {
+                $menu = Menu::find($item['id_menu']);
+                $subtotal = $menu->price * $item['qty'];
+                $totalPrice += $subtotal;
+
+                OrderDetail::create([
+                    'id_order' => $order->id_order,
+                    'id_menu' => $menu->id_menu,
+                    'qty' => $item['qty'],
+                    'subtotal' => $subtotal,
+                ]);
+            }
+
+            $order->total_price = $totalPrice;
+            $order->save();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Riwayat pesanan berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Gagal menyimpan pesanan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menghapus riwayat pesanan.
+     */
+    public function destroy($id)
+    {
+        if (!Auth::user()->tenant) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+        
+        $tenantId = Auth::user()->tenant->id_tenant;
+        $order = Order::where('id_tenant', $tenantId)->findOrFail($id);
+        
+        $order->delete();
+
+        return redirect()->back()->with('success', 'Riwayat pesanan berhasil dihapus.');
     }
 }

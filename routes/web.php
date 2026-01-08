@@ -32,7 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
 use App\Http\Controllers\TenantController;
-// AdminController untuk Dashboard
+// Gunakan AdminController untuk Dashboard
 use App\Http\Controllers\AdminController; 
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -59,6 +59,8 @@ Route::middleware(['auth', 'role:tenant'])->prefix('tenant')->name('tenant.')->g
     Route::get('orders/history', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'history'])->name('orders.history');
     Route::get('orders/export-pdf', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'exportPdf'])->name('orders.pdf');
     Route::post('orders/{id}/update-status', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::post('orders/store-manual', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'storeManualHistory'])->name('orders.storeManual'); // Route Manual History
+    Route::delete('orders/{id}', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'destroy'])->name('orders.destroy'); // Route Delete
     Route::post('update-status', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'updateTenantStatus'])->name('updateStatus'); // Route baru
     Route::get('orders', [\App\Http\Controllers\Tenant\TenantOrderController::class, 'index'])->name('orders.index');
 
