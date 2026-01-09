@@ -9,7 +9,7 @@ Aplikasi web untuk manajemen kantin (TelyuCanteen) berbasis Laravel 11. Mempermu
 ## 📱 Fitur Utama
 
 ### 👤 Pelanggan (Customer)
-- **Menu Browsing**: Cari makanan berdasarkan nama, kategori, atau tenant favorit.
+- **Menu Browsing**: Cari makanan berdasarkan nama, kategori, atau menu favorit.
 - **Keranjang & Checkout**: Pesan dari beberapa tenant sekaligus dalam satu transaksi (Split Order).
 - **Riwayat Pesanan**: Pantau status pesanan secara real-time (Pending -> Cooking -> Ready -> Completed).
 - **Notifikasi Live**: Dapatkan notifikasi saat status pesanan berubah.
@@ -17,7 +17,7 @@ Aplikasi web untuk manajemen kantin (TelyuCanteen) berbasis Laravel 11. Mempermu
 - **Profile Settings**: Ubah foto profil, nama, dan password.
 
 ### 🏪 Tenant (Penjual)
-- **Kitchen Dashboard**: Kelola pesanan masuk, ubah status pesanan (Terima/Tolak, Masak, Siap).
+- **Kitchen Dashboard**: Kelola pesanan masuk, ubah status pesanan (Terima/tolak, Masak, Siap).
 - **Manajemen Menu**: Tambah, edit, hapus menu, dan atur stok/ketersediaan.
 - **Buka/Tutup Toko**: Atur status operasional toko dengan satu klik.
 - **Laporan PDF**: Download laporan riwayat penjualan dalam format PDF.
