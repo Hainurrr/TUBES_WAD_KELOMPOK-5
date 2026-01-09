@@ -59,9 +59,14 @@
                                 <div class="alert alert-light border">
                                     Total: <strong>Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>
                                 </div>
-                                <button onclick="updateStatus({{ $order->id_order }}, 'cooking')" class="btn btn-danger w-100">
-                                    <i class="bi bi-fire"></i> Terima & Masak
-                                </button>
+                                <div class="d-flex gap-2">
+                                    <button onclick="updateStatus({{ $order->id_order }}, 'cancelled')" class="btn btn-outline-secondary w-50">
+                                        <i class="bi bi-x-circle"></i> Batalkan
+                                    </button>
+                                    <button onclick="updateStatus({{ $order->id_order }}, 'cooking')" class="btn btn-danger w-50">
+                                        <i class="bi bi-fire"></i> Terima
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -176,7 +181,7 @@
         const isOpen = checkbox.checked ? 1 : 0;
         const label = document.getElementById('tenantStatusLabel');
         
-        // Update UI secara optimis
+        // Update UI
         label.innerText = isOpen ? 'Buka' : 'Tutup';
         label.className = isOpen ? 'form-check-label fw-bold text-success' : 'form-check-label fw-bold text-danger';
 

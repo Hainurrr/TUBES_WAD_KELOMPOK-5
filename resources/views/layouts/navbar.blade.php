@@ -33,14 +33,7 @@
 
             <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
                 @auth
-                @if(Auth::user()->role === 'customer')
-                    <a href="{{ route('cart.index') }}" class="btn btn-ghost text-secondary position-relative me-2">
-                        <i class="bi bi-cart fs-5"></i>
-                        @if(session('cart') && count(session('cart')) > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                        @endif
-                    </a>
-                @endif
+
                     <div class="dropdown">
                         <button class="btn btn-ghost text-secondary position-relative me-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-bell fs-5"></i>
