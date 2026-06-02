@@ -30,7 +30,7 @@
                             <div class="card-body p-0">
                                 <div class="row g-0">
                                     <!-- Left: Illustration & Status -->
-                                    <div class="col-8 p-4">
+                                    <div class="col-12 col-md-8 p-4">
                                         <div class="d-flex align-items-center mb-3">
                                             <div class="rounded-circle bg-maroon text-white d-flex align-items-center justify-content-center me-3" 
                                                  style="width: 48px; height: 48px;">
@@ -44,12 +44,22 @@
 
                                         <div class="mb-4">
                                             <h5 class="fw-bold text-dark mb-1">
-                                                @if($order->status == 'pending') Menunggu Konfirmasi
+                                                {{-- MANPROSI_TELYUCAN_IMPROVEMENT - Tampilkan status berdasarkan payment_status --}}
+                                                @if($order->payment_status == 'unpaid')
+                                                    <span class="text-warning">Menunggu Pembayaran</span>
+                                                @elseif($order->status == 'pending') Menunggu Konfirmasi
                                                 @elseif($order->status == 'cooking') Sedang Dimasak
                                                 @elseif($order->status == 'ready') Siap Diambil
                                                 @else Diproses @endif
                                             </h5>
-                                            <small class="text-secondary">Estimasi selesai: 15-20 menit</small>
+                                            @if($order->payment_status == 'unpaid' && $order->snap_token)
+                                                {{-- MANPROSI_TELYUCAN_IMPROVEMENT - Tombol bayar sekarang di riwayat --}}
+                                                <a href="{{ route('payment.page', ['transactionGroup' => $order->transaction_group]) }}" class="btn btn-sm btn-warning rounded-pill fw-bold mt-1">
+                                                    <i class="bi bi-wallet2 me-1"></i>Bayar Sekarang
+                                                </a>
+                                            @else
+                                                <small class="text-secondary">Estimasi selesai: 15-20 menit</small>
+                                            @endif
                                         </div>
 
                                         <!-- Progress Steps -->
@@ -80,7 +90,7 @@
                                     </div>
 
                                     <!-- Right: Illustration Image -->
-                                    <div class="col-4 bg-light d-flex align-items-center justify-content-center p-3">
+                                    <div class="col-12 col-md-4 bg-light d-flex align-items-center justify-content-center p-3 d-none d-md-flex">
                                         <img src="https://cdn-icons-png.flaticon.com/512/3448/3448608.png" alt="Cooking" class="img-fluid" style="max-height: 100px; opacity: 0.8;">
                                     </div>
                                 </div>

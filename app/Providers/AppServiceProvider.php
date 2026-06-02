@@ -21,7 +21,8 @@ class AppServiceProvider extends ServiceProvider
     {
 
 
-        if($this->app->environment('production') || $this->app->environment('local')) {
+        // Force HTTPS hanya di production (Heroku), bukan di local development
+        if ($this->app->environment('production')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
         // Bagikan notifikasi (database notifications) ke navbar

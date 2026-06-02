@@ -24,9 +24,11 @@ class TenantOrderController extends Controller
         $tenantId = Auth::user()->tenant->id_tenant;
 
         // Ambil pesanan yang relevan untuk dapur
+        // MANPROSI_TELYUCAN_IMPROVEMENT - Hanya tampilkan pesanan yang sudah dibayar (paid)
         $orders = Order::with(['user', 'orderDetails.menu'])
             ->where('id_tenant', $tenantId)
             ->whereIn('status', ['pending', 'cooking', 'ready'])
+            ->where('payment_status', 'paid')
             ->orderBy('created_at', 'asc')
             ->get();
 
@@ -185,6 +187,7 @@ class TenantOrderController extends Controller
             $order->id_tenant = $tenantId;
             $order->transaction_group = $transactionGroup;
             $order->status = 'completed'; // Langsung selesai
+            $order->payment_status = 'paid'; // MANPROSI_TELYUCAN_IMPROVEMENT - Walk-in sudah dibayar
             $order->total_price = 0; // Update nanti
             $order->created_at = $request->transaction_date . ' ' . date('H:i:s'); // Pakai jam sekarang
             $order->updated_at = now();

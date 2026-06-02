@@ -10,12 +10,16 @@ class Order extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_order';
+    // MANPROSI_TELYUCAN_IMPROVEMENT - Menambahkan kolom Midtrans ke fillable
     protected $fillable = [
         'id_user',
         'id_tenant',
         'transaction_group',
         'total_price',
-        'status'
+        'status',
+        'snap_token',
+        'midtrans_transaction_id',
+        'payment_status',
     ];
 
     public function user()

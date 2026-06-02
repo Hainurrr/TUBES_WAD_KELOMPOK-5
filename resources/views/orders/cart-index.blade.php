@@ -21,9 +21,6 @@
             <a href="{{ route('home') }}" class="btn btn-maroon mt-3">Mulai Pesan</a>
         </div>
     @else
-        <form action="{{ route('cart.checkout') }}" method="POST">
-            @csrf
-            
             @foreach($cart as $tenantId => $group)
                 <div class="card mb-4 shadow-sm border-0 rounded-4">
                     <div class="card-header bg-white border-bottom py-3">
@@ -81,18 +78,15 @@
                 <div class="container d-flex justify-content-between align-items-center">
                     <div>
                         <small class="text-secondary d-block">Total Pembayaran</small>
-                        {{-- Total global dihitung per tenant --}}
                         <span class="fw-bold fs-4 text-maroon">Checkout Sekarang</span>
                     </div>
-                    <button type="submit" class="btn btn-maroon btn-lg px-5 rounded-pill fw-bold">
+                    <a href="{{ route('cart.checkout') }}" class="btn btn-maroon btn-lg px-5 rounded-pill fw-bold">
                         Bayar & Pesan <i class="bi bi-arrow-right ms-2"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
             {{-- Spacer untuk mencegah konten tertutup oleh footer fixed --}}
             <div style="height: 100px;"></div>
-
-        </form>
     @endif
 </div>
 @endsection

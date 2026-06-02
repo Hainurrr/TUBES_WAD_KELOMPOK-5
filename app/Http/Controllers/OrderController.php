@@ -35,9 +35,9 @@ class OrderController extends Controller
 
         // Filter berdasarkan pencarian
         if($request->has('q') && $request->q != '') {
-             $query->where('name', 'ilike', '%' . $request->q . '%')
+             $query->where('name', 'like', '%' . $request->q . '%')
                    ->orWhereHas('tenant', function($q) use ($request) {
-                       $q->where('name', 'ilike', '%' . $request->q . '%');
+                       $q->where('name', 'like', '%' . $request->q . '%');
                    });
         }
 
@@ -97,9 +97,9 @@ class OrderController extends Controller
 
         // Filter berdasarkan pencarian
         if($request->has('q') && $request->q != '') {
-             $query->where('name', 'ilike', '%' . $request->q . '%')
+             $query->where('name', 'like', '%' . $request->q . '%')
                    ->orWhereHas('tenant', function($q) use ($request) {
-                       $q->where('name', 'ilike', '%' . $request->q . '%');
+                       $q->where('name', 'like', '%' . $request->q . '%');
                    });
         }
 
@@ -206,6 +206,14 @@ class OrderController extends Controller
                     } elseif($request->action == 'decrease') {
                         $tenant['items'][$id]['qty']--;
                         if($tenant['items'][$id]['qty'] < 1) {
+                            unset($tenant['items'][$id]);
+                        }
+                    } elseif($request->action == 'set' && isset($request->qty)) {
+                        // MANPROSI_TELYUCAN_IMPROVEMENT - Set custom qty from input
+                        $qty = (int) $request->qty;
+                        if($qty > 0) {
+                            $tenant['items'][$id]['qty'] = $qty;
+                        } else {
                             unset($tenant['items'][$id]);
                         }
                     }
@@ -421,6 +429,7 @@ class OrderController extends Controller
             }
 
             $order->status = 'cancelled';
+            $order->payment_status = 'cancelled'; // MANPROSI_TELYUCAN_IMPROVEMENT
             $order->save();
 
             DB::commit();

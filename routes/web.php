@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController; // MANPROSI_TELYUCAN_IMPROVEMENT
 use App\Http\Controllers\Tenant\MenuController;
 
 Route::get('/menus', [OrderController::class, 'catalog'])->name('menus.index');
@@ -16,7 +17,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/cart/update', [OrderController::class, 'updateCart'])->name('cart.update');
     Route::get('/cart', [OrderController::class, 'cart'])->name('cart.index');
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('cart.checkout');
-    Route::post('/checkout/store', [OrderController::class, 'storeOrder'])->name('order.store');
+    // MANPROSI_TELYUCAN_IMPROVEMENT - Route checkout diarahkan ke PaymentController
+    Route::post('/checkout/store', [PaymentController::class, 'checkout'])->name('order.store');
+    Route::get('/payment/{transactionGroup}', [PaymentController::class, 'paymentPage'])->name('payment.page');
 
     // Profile Routes
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');

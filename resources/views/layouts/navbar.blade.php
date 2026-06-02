@@ -20,7 +20,7 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-between" id="navbarContent">
-            <div class="mx-auto d-none d-md-block w-50">
+            <div class="mx-auto d-block w-100 w-md-50 mb-3 mb-lg-0 px-2 px-lg-0">
                 <form action="{{ route('menus.index') }}" method="GET" class="position-relative">
                     <input type="text" name="q" 
                            class="form-control rounded-pill ps-5 border-secondary-subtle" 

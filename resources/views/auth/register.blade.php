@@ -35,7 +35,7 @@
     <div class="row g-0 split-screen">
         <div class="col-lg-6 d-none d-lg-block bg-image"></div>
         <div class="col-lg-6 d-flex align-items-center justify-content-center bg-light">
-            <div class="w-50">
+            <div class="w-100 px-4 px-lg-0" style="max-width: 420px;">
                 <div class="mb-4">
                     <a href="{{ route('home') }}" class="text-secondary fw-bold">
                         <i class="bi bi-arrow-left me-1"></i> Kembali ke Beranda

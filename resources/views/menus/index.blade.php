@@ -14,14 +14,14 @@
         <div class="card-body p-4">
             <form action="{{ route('menus.index') }}" method="GET">
                 <div class="row g-3">
-                    <div class="col-md-3">
+                    <div class="col-12 col-md-3">
                         <label class="form-label small fw-bold text-secondary">Pencarian</label>
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
                             <input type="text" name="q" class="form-control border-start-0 ps-0" placeholder="Cari menu..." value="{{ request('q') }}">
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-12 col-md-2">
                          <label class="form-label small fw-bold text-secondary">Jenis Menu</label>
                          <select name="menu_category" class="form-select">
                              <option value="">Semua</option>
@@ -30,7 +30,7 @@
                              <option value="Snack" {{ request('menu_category') == 'Snack' ? 'selected' : '' }}>Snack</option>
                          </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-12 col-md-3">
                         <label class="form-label small fw-bold text-secondary">Lokasi Kantin</label>
                         <select name="category" class="form-select">
                             <option value="">Semua Lokasi</option>
@@ -39,7 +39,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-12 col-md-2">
                         <label class="form-label small fw-bold text-secondary">Urutkan</label>
                         <select name="sort" class="form-select">
                             <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Terbaru</option>
@@ -48,7 +48,7 @@
                             <option value="rating" {{ request('sort') == 'rating' ? 'selected' : '' }}>Rating Tertinggi</option>
                         </select>
                     </div>
-                    <div class="col-md-2 d-flex align-items-end">
+                    <div class="col-12 col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-maroon w-100 fw-bold" style="background-color: #800000; color: white;">Terapkan</button>
                     </div>
                 </div>

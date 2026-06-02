@@ -1,4 +1,5 @@
-@if(Auth::check() && Auth::user()->role === 'customer' && session('cart') && count(session('cart')) > 0)
+{{-- MANPROSI_TELYUCAN_IMPROVEMENT - Sembunyikan pop-up total pesanan di halaman checkout & payment --}}
+@if(Auth::check() && Auth::user()->role === 'customer' && session('cart') && count(session('cart')) > 0 && !request()->routeIs('cart.checkout') && !request()->routeIs('payment.page'))
     @php
         $totalQty = 0;
         $totalPrice = 0;
@@ -16,7 +17,7 @@
             
             <!-- Cart Popup Widget (Hidden by default) -->
             <div id="cartPopup" class="bg-white rounded-4 shadow-lg mb-3 d-none position-absolute bottom-100 end-0 me-3" 
-                 style="width: 380px; max-height: 80vh; overflow-y: auto; pointer-events: auto;">
+                 style="width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; pointer-events: auto;">
                 
                 <!-- Header -->
                 <div class="p-3 border-bottom sticky-top bg-white">
@@ -35,14 +36,11 @@
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div class="flex-grow-1 me-2">
                                         <h6 class="fw-bold mb-0 text-dark">{{ $item['name'] }}</h6>
-                                        <div class="d-flex align-items-center mt-1">
-                                            <a href="#" class="text-success text-decoration-none small fw-bold me-2"><i class="bi bi-pencil-fill me-1"></i> Edit</a>
-                                            <a href="#" class="text-secondary text-decoration-none small fw-bold"><i class="bi bi-journal-text me-1"></i> Notes</a>
-                                        </div>
+                                        {{-- MANPROSI_TELYUCAN_IMPROVEMENT - Logo Edit dan Notes dihapus sesuai permintaan --}}
                                     </div>
                                     
                                     <div class="d-flex align-items-center gap-2">
-                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline">
+                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline m-0">
                                             @csrf
                                             <input type="hidden" name="id_menu" value="{{ $menuId }}">
                                             <input type="hidden" name="action" value="decrease">
@@ -51,9 +49,18 @@
                                             </button>
                                         </form>
                                         
-                                        <span class="fw-bold small" style="min-width: 20px; text-align: center;">{{ $item['qty'] }}</span>
+                                        {{-- MANPROSI_TELYUCAN_IMPROVEMENT - Input manual qty --}}
+                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline m-0">
+                                            @csrf
+                                            <input type="hidden" name="id_menu" value="{{ $menuId }}">
+                                            <input type="hidden" name="action" value="set">
+                                            <input type="number" name="qty" value="{{ $item['qty'] }}" min="1" 
+                                                   class="form-control form-control-sm text-center fw-bold p-0" 
+                                                   style="width: 36px; height: 24px; border: 1px solid #dee2e6; border-radius: 4px; font-size: 0.85rem;" 
+                                                   onchange="this.form.submit()">
+                                        </form>
 
-                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline">
+                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline m-0">
                                             @csrf
                                             <input type="hidden" name="id_menu" value="{{ $menuId }}">
                                             <input type="hidden" name="action" value="increase">
