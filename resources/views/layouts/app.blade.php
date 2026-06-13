@@ -103,58 +103,12 @@
     @include('components.floating-cart')
     @include('components.auth-modal')
 
-    {{-- MANPROSI_TELYUCAN_IMPROVEMENT - Pop-up peringatan disclaimer proyek tugas kuliah --}}
-    <div class="modal fade" id="disclaimerModal" tabindex="-1" aria-labelledby="disclaimerModalLabel" aria-hidden="true" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
-                {{-- Header dengan gradient --}}
-                <div class="text-center py-4" style="background: linear-gradient(135deg, #800000 0%, #b30000 100%);">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white bg-opacity-25 mb-3" style="width: 64px; height: 64px;">
-                        <i class="bi bi-exclamation-triangle-fill fs-2 text-white"></i>
-                    </div>
-                    <h5 class="fw-bold text-white mb-0" id="disclaimerModalLabel">⚠️ Peringatan / Disclaimer</h5>
-                </div>
-                <div class="modal-body p-4 text-center">
-                    <p class="fw-bold text-dark mb-2" style="font-size: 1.1rem;">Website Ini Hanya Proyek Tugas Kuliah</p>
-                    <p class="text-secondary mb-3">
-                        <strong>TelyuCan</strong> adalah website <strong>simulasi marketplace kantin</strong> yang dibuat untuk keperluan 
-                        <strong>Tugas Besar mata kuliah Pengembangan Aplikasi Web (WAD)</strong> di Telkom University.
-                    </p>
-                    <div class="alert alert-warning rounded-3 text-start small mb-3">
-                        <i class="bi bi-info-circle-fill me-2"></i>
-                        <strong>Penting:</strong>
-                        <ul class="mb-0 mt-1">
-                            <li>Semua transaksi bersifat <strong>simulasi (Sandbox)</strong> dan <strong>tidak melibatkan uang nyata</strong>.</li>
-                            <li>Data yang ditampilkan adalah <strong>data dummy</strong> untuk keperluan demonstrasi.</li>
-                            <li>Pembayaran menggunakan <strong>Midtrans Sandbox</strong> (mode testing).</li>
-                        </ul>
-                    </div>
-                    <button type="button" class="btn btn-maroon rounded-pill px-5 py-2 fw-bold" data-bs-dismiss="modal" id="btnDisclaimerAccept">
-                        <i class="bi bi-check-circle me-2"></i>Saya Mengerti
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
             duration: 800,
             once: true,
-        });
-
-        // MANPROSI_TELYUCAN_IMPROVEMENT - Tampilkan disclaimer popup sekali per session
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!sessionStorage.getItem('disclaimer_accepted')) {
-                var disclaimerModal = new bootstrap.Modal(document.getElementById('disclaimerModal'));
-                disclaimerModal.show();
-
-                document.getElementById('btnDisclaimerAccept').addEventListener('click', function() {
-                    sessionStorage.setItem('disclaimer_accepted', 'true');
-                });
-            }
         });
     </script>
     @stack('scripts')
