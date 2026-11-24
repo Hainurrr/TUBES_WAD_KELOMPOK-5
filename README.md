@@ -1,38 +1,39 @@
-# TelyuCan - Kantin Digital Telkom University
+# TelyuCan - Sistem Pemesanan Kantin Digital Telkom University
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-2ea44f?style=for-the-badge&logo=heroku&logoColor=white)](https://www.telyucan.app)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-B9112E?style=for-the-badge&logo=heroku&logoColor=white)](https://www.telyucan.app)
 
-Aplikasi web untuk manajemen kantin (TelyuCanteen) berbasis Laravel 11. Mempermudah mahasiswa memesan makanan dan membantu tenant mengelola pesanan.
+TelyuCan adalah aplikasi web manajemen dan pemesanan kantin kampus Telkom University berbasis Laravel 11. Mahasiswa dan civitas akademika dapat memilih area kantin (`TULT`, `GKU`, `Pujasera`), memesan dari beberapa gerai sekaligus dalam satu keranjang, membayar secara digital melalui Midtrans, lalu mengambil pesanan langsung di konter tanpa antri.
 
-🔗 **Link Website:** [https://www.telyucan.app](https://www.telyucan.app)
+**Alamat Website:** [https://www.telyucan.app](https://www.telyucan.app)
 
-## 📱 Fitur Utama
+## Fitur Utama
 
-### 👤 Pelanggan (Customer)
-- **Menu Browsing**: Cari makanan berdasarkan nama, kategori, atau menu favorit.
-- **Keranjang & Checkout**: Pesan dari beberapa tenant sekaligus dalam satu transaksi (Split Order).
-- **Riwayat Pesanan**: Pantau status pesanan secara real-time (Pending -> Cooking -> Ready -> Completed).
-- **Notifikasi Live**: Dapatkan notifikasi saat status pesanan berubah.
-- **Review & Rating**: Beri ulasan dan bintang untuk menu yang sudah dibeli.
-- **Profile Settings**: Ubah foto profil, nama, dan password.
+### Pelanggan (Customer)
+- **Jelajah Area & Katalog Menu:** Cari hidangan berdasarkan nama, kategori, atau lokasi kantin (`TULT`, `GKU`, `Pujasera`) beserta indikator status gerai buka dan ketersediaan stok.
+- **Keranjang Multi-Tenant & Checkout Midtrans:** Gabungkan pesanan dari beberapa gerai sekaligus dalam satu transaksi dengan pembayaran digital Midtrans Snap (QRIS, GoPay, E-Wallet, dan Virtual Account).
+- **Pelacakan Pesanan Real-Time:** Pantau status pesanan mulai dari `Menunggu` -> `Dimasak` -> `Siap Diambil` -> `Selesai`, lengkap dengan pembatalan pesanan yang belum diproses dan cetak struk.
+- **Notifikasi Langsung:** Terima pembaruan otomatis saat status pesanan berubah atau siap diambil di konter.
+- **Ulasan & Rating:** Berikan ulasan dan penilaian untuk menu dari pesanan yang telah selesai.
+- **Pengaturan Profil:** Kelola nama, nomor identitas, kata sandi, dan foto profil (tersimpan permanen melalui Cloudinary).
 
-### 🏪 Tenant (Penjual)
-- **Kitchen Dashboard**: Kelola pesanan masuk, ubah status pesanan (Terima, Masak, Siap).
-- **Manajemen Menu**: Tambah, edit, hapus menu, dan atur stok/ketersediaan.
-- **Buka/Tutup Toko**: Atur status operasional toko dengan satu klik.
-- **Laporan PDF**: Download laporan riwayat penjualan dalam format PDF.
+### Tenant (Pengelola Gerai)
+- **Layar Dapur (Kitchen Display System):** Kelola tiket pesanan yang sudah terbayar dan perbarui status pesanan secara langsung (`Terima`, `Masak`, `Siap Diambil`, `Selesai`).
+- **Manajemen Menu & Stok:** Tambah, ubah, dan hapus menu beserta pengaturan harga, stok harian, kategori, dan unggah foto hidangan.
+- **Status Operasional Gerai:** Buka atau tutup gerai secara instan dengan satu tombol kontrol.
+- **Riwayat Penjualan & Transaksi Manual:** Catat pesanan langsung di konter (walk-in), pantau ringkasan pendapatan, serta ekspor laporan penjualan dalam format PDF.
+- **Ulasan Pelanggan:** Pantau rata-rata rating dan masukan pelanggan terhadap menu gerai.
 
-### 🛡️ Admin
-- **Manajemen Tenant**: Tambah dan kelola data tenant kantin.
-- **Manajemen User**: Kelola akun pengguna (Customer/Tenant).
-- **Moderasi Review**: Hapus review yang tidak pantas.
-- **Laporan Tenant PDF**: Download daftar tenant dan performanya.
+### Admin
+- **Dashboard Ringkasan:** Pantau total gerai terdaftar beserta status operasional aktif/tutup.
+- **Manajemen Tenant:** Tambah, sunting (dengan integrasi data wilayah Indonesia), hapus data gerai, dan ekspor laporan tenant dalam format PDF.
+- **Manajemen Pengguna:** Kelola akun pelanggan, tenant, dan admin beserta peran serta data identitas.
+- **Moderasi Ulasan:** Tinjau dan hapus ulasan yang tidak sesuai ketentuan.
 
 ---
 
-## 🔐 Akun Testing (Default)
+## Akun Testing (Default)
 
-Gunakan akun berikut untuk mencoba aplikasi:
+Gunakan akun berikut untuk mencoba aplikasi setelah menjalankan seeder:
 
 | Role | Email | Password |
 |------|-------|----------|
@@ -44,47 +45,47 @@ Gunakan akun berikut untuk mencoba aplikasi:
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## Teknologi yang Digunakan
 
 | Kategori | Teknologi |
 |----------|-----------|
 | **Backend** | PHP 8.2, Laravel 11 |
-| **Frontend** | Blade Templates, Bootstrap 5 |
-| **Database** | MySQL (Local), PostgreSQL (Heroku) |
-| **Server** | Apache (Heroku Dyno) |
-| **Assets** | Vite, NPM |
+| **Frontend** | Blade Templates, Bootstrap 5, Vite, Custom Bento Design System |
+| **Tipografi** | Self-hosted Variable Fonts (`Archivo`, `Figtree`, `Chivo Mono`) |
+| **Pembayaran** | Midtrans Snap API (QRIS, E-Wallet, Virtual Account) |
+| **Penyimpanan Media** | Cloudinary (`cloudinary-laravel`) |
+| **Database** | MySQL (Lokal), PostgreSQL / JawsDB (Heroku) |
+| **Server & Deploy** | Apache (`heroku-php-apache2`), GitHub Auto-Deploy ke Heroku |
 
 ---
 
-## 🚀 Panduan Instalasi (Lokal)
+## Panduan Instalasi (Lokal)
 
-Jika ingin menjalankan di komputer sendiri (Localhost):
-
-### 1. Clone & Install
+### 1. Clone & Install Dependensi
 ```bash
-git clone https://github.com/WAD-kelompok5/WAD_kelompok5.github.io.git
-cd WAD_kelompok5.github.io
+git clone https://github.com/Hainurrr/TUBES_WAD_KELOMPOK-5.git
+cd TUBES_WAD_KELOMPOK-5
 composer install
 npm install
 ```
 
 ### 2. Konfigurasi Environment
-Salin file `.env.example` ke `.env` dan atur database:
+Salin file `.env.example` ke `.env`, buat application key, lalu sesuaikan kredensial database, Midtrans, dan Cloudinary:
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
-Pastikan database MySQL bernama `telyucan` sudah dibuat.
+Pastikan database MySQL bernama `telyucan` sudah tersedia secara lokal.
 
-### 3. Migrasi & Seeding
-Isi database dengan data awal:
+### 3. Migrasi, Seeding, & Build Aset
 ```bash
 php artisan migrate:fresh --seed
 php artisan storage:link
+npm run build
 ```
 
 ### 4. Jalankan Aplikasi
-Buka 2 terminal:
+Untuk pengembangan lokal dengan hot-reload Vite, buka dua terminal:
 ```bash
 # Terminal 1
 php artisan serve
@@ -92,19 +93,21 @@ php artisan serve
 # Terminal 2
 npm run dev
 ```
-Akses di: `http://127.0.0.1:8000`
+Aplikasi dapat diakses melalui `http://127.0.0.1:8000`.
 
 ---
 
-## ☁️ Deployment (Heroku)
+## Deployment (GitHub Auto-Deploy ke Heroku)
 
-Aplikasi ini sudah dikonfigurasi untuk Heroku dengan:
-- **Procfile**: Mengatur Apache web server.
-- **PostgreSQL**: Menggunakan add-on `heroku-postgresql`.
-- **Custom Domain**: `www.telyucan.app` (HTTPS enabled).
+Repositori branch `main` terhubung ke pipeline auto-deploy Heroku dengan konfigurasi berikut:
+- **Procfile:** Menjalankan Apache web server (`vendor/bin/heroku-php-apache2 public/`) dan fase `release` (`php artisan migrate --force && php artisan view:clear && php artisan config:clear`).
+- **Build Aset Otomatis:** `composer.json` menjalankan `npm install` dan `npm run build` pada tahap `post-install-cmd` sehingga bundle Vite terbaru otomatis dikompilasi saat deploy.
+- **Aset Font Self-Hosted:** Berkas font `.woff2` di `public/fonts/` disajikan langsung tanpa ketergantungan CDN pihak ketiga.
+- **Database & Media:** Menggunakan add-on database Heroku, Cloudinary untuk unggahan gambar permanen, serta Midtrans untuk pembayaran digital.
+- **Custom Domain:** `www.telyucan.app` (HTTPS aktif).
 
 ---
 
-## 👥 Tim Pengembang (Kelompok 5)
+## Tim Pengembang (Kelompok 5)
 
-Dibuat untuk memenuhi Tugas Besar mata kuliah **Web Application Development**.
+Dikembangkan untuk memenuhi Tugas Besar mata kuliah **Web Application Development (WAD)**, Telkom University.
