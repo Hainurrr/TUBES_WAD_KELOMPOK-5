@@ -3,100 +3,59 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <title>Tenant Dashboard - TelyuCan</title>
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>@yield('title', 'Panel Tenant — TelyuCan')</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8f9fa;
-        }
-        .nav-pills .nav-link.active {
-            background-color: #800000;
-        }
-        .btn-maroon {
-            background-color: #800000;
-            color: white;
-        }
-        .btn-maroon:hover {
-            background-color: #660000;
-            color: white;
-        }
-        .text-maroon {
-            color: #800000;
-        }
-
-        /* Sidebar Transition */
-        #sidebar-wrapper {
-            transition: width 0.3s;
-            overflow: hidden;
-            width: 280px;
-        }
-        #sidebar-wrapper.collapsed {
-            width: 80px;
-        }
-        #sidebar-wrapper.collapsed .sidebar-text {
-            display: none;
-        }
-        #sidebar-wrapper.collapsed .sidebar-header-text {
-            display: none;
-        }
-        #sidebar-wrapper.collapsed .sidebar-logo {
-            margin-right: 0 !important;
-        }
-        /* Center arrow when collapsed */
-        #sidebar-wrapper.collapsed #sidebarToggleInternal {
-            justify-content: center;
-        }
-    </style>
+    @stack('head')
 </head>
 <body>
-
-    <div class="d-flex">
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper" class="flex-shrink-0 bg-dark sticky-top vh-100">
+    <div class="tc-shell">
+        <aside id="sidebar-wrapper" class="tc-sidebar">
             @include('layouts.tenant-sidebar')
-        </div>
+        </aside>
 
-        <!-- Main Content -->
-        <div class="flex-grow-1" style="height: 100vh; overflow-y: auto;">
-            <!-- Topbar -->
-            <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm px-4 py-3 sticky-top">
-                <div class="container-fluid">
-                    <span class="navbar-brand fw-bold text-secondary fs-6">Tenant Area</span>
-                    
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    
-                    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-                        <!-- Profile Dropdown -->
-                        <div class="dropdown">
-                            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ Auth::user()->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=800000&color=fff' }}" alt="" width="32" height="32" class="rounded-circle me-2 object-fit-cover">
-                                <strong class="d-none d-md-inline">{{ Auth::user()->name ?? 'Tenant User' }}</strong>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
-                                <li><a class="dropdown-item" href="{{ route('profile.edit') }}">Profile & Settings</a></li>
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger">Sign out</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+        <div class="tc-shell-main">
+            <header class="tc-shell-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fw-bold text-dark tc-display" style="font-size: 1.05rem;">Area Operasional Tenant</span>
+                    @if(Auth::user()->tenant)
+                        <span class="tc-badge tc-badge-neutral d-none d-sm-inline-flex">
+                            <i class="bi bi-shop"></i>{{ Auth::user()->tenant->name }}
+                        </span>
+                    @endif
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{{ route('home') }}" class="btn btn-tc-ghost btn-sm d-none d-md-inline-flex align-items-center gap-1 text-decoration-none">
+                        <i class="bi bi-box-arrow-up-right"></i>Lihat Beranda
+                    </a>
+                    <div class="dropdown">
+                        <button type="button" class="btn border-0 p-0 d-flex align-items-center gap-2 text-dark" id="dropdownTenantUser" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ Auth::user()->avatar && Auth::user()->avatar !== 'default_avatar.png' ? '/storage/' . Auth::user()->avatar : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name) . '&background=B9112E&color=fff' }}"
+                                 alt="Foto profil" width="34" height="34" class="rounded-circle object-fit-cover border">
+                            <span class="fw-semibold small d-none d-md-inline">{{ Auth::user()->name ?? 'Pengelola Tenant' }}</span>
+                            <i class="bi bi-chevron-down small text-muted"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end tc-dropdown-menu mt-2" aria-labelledby="dropdownTenantUser">
+                            <li><a class="dropdown-item" href="{{ route('profile.edit') }}"><i class="bi bi-person-gear me-2"></i>Profil &amp; Pengaturan</a></li>
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger fw-semibold"><i class="bi bi-box-arrow-right me-2"></i>Keluar</button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
-            </nav>
+            </header>
 
-            <main class="p-4">
+            <main class="tc-shell-content">
                 @yield('content')
             </main>
         </div>
@@ -108,19 +67,12 @@
             const sidebar = document.getElementById('sidebar-wrapper');
             const toggleBtn = document.getElementById('sidebarToggleInternal');
             const toggleIcon = document.getElementById('sidebarToggleIcon');
-            
-            if(toggleBtn) {
+
+            if (toggleBtn && sidebar && toggleIcon) {
                 toggleBtn.addEventListener('click', function() {
                     sidebar.classList.toggle('collapsed');
-                    
-                    // Logika Toggle Icon
-                    if (sidebar.classList.contains('collapsed')) {
-                        toggleIcon.classList.remove('bi-arrow-left-circle');
-                        toggleIcon.classList.add('bi-arrow-right-circle');
-                    } else {
-                        toggleIcon.classList.remove('bi-arrow-right-circle');
-                        toggleIcon.classList.add('bi-arrow-left-circle');
-                    }
+                    const isCollapsed = sidebar.classList.contains('collapsed');
+                    toggleIcon.className = isCollapsed ? 'bi bi-arrow-right-circle fs-5' : 'bi bi-arrow-left-circle fs-5';
                 });
             }
         });

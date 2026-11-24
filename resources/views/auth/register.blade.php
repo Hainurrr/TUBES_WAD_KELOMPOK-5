@@ -1,51 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - TelyuCan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Daftar Akun — TelyuCan</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        .split-screen {
-            min-height: 100vh;
-        }
-        .bg-image {
-            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-        }
-        .btn-maroon {
-            background-color: #800000;
-            color: white;
-        }
-        .btn-maroon:hover {
-            background-color: #600000;
-            color: white;
-        }
-        .text-maroon {
-            color: #800000;
-        }
-        a {
-            text-decoration: none;
-        }
-    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
-    <div class="row g-0 split-screen">
-        <div class="col-lg-6 d-none d-lg-block bg-image"></div>
-        <div class="col-lg-6 d-flex align-items-center justify-content-center bg-light">
-            <div class="w-100 px-4 px-lg-0" style="max-width: 420px;">
-                <div class="mb-4">
-                    <a href="{{ route('home') }}" class="text-secondary fw-bold">
-                        <i class="bi bi-arrow-left me-1"></i> Kembali ke Beranda
-                    </a>
+    <div class="tc-auth-shell">
+        <div class="tc-auth-stage">
+            <a href="{{ route('home') }}" class="tc-brand">
+                <svg width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true">
+                    <rect width="36" height="36" rx="11" fill="#B9112E"/>
+                    <path d="M9.5 11.5H26.5V15.5H20.25V26H15.75V15.5H9.5V11.5Z" fill="#FFFFFF"/>
+                    <rect x="21.5" y="21.5" width="5" height="4.5" rx="1.5" fill="#F59E0B"/>
+                </svg>
+                <span>TelyuCan</span>
+            </a>
+
+            <div class="my-auto py-4">
+                <h1 class="tc-hero-title mb-3" style="font-size: clamp(2.1rem, 3.2vw, 3rem);">Satu akun untuk<br>semua kantin Tel-U.</h1>
+                <p class="tc-hero-sub mb-4">Buat akun pelanggan untuk memesan lintas gerai dalam satu checkout, menerima notifikasi dapur, dan memberi ulasan menu.</p>
+
+                <div class="tc-bento-tile p-4" style="background: var(--tc-obsidian-elevated); border: 1px solid var(--tc-obsidian-border); border-radius: 22px; max-width: 480px;">
+                    <div class="tc-step-stack">
+                        <div class="tc-step-pill"><span class="tc-step-num" style="color: #F59E0B;">01</span><span>Pilih menu dari TULT, GKU, atau Pujasera</span></div>
+                        <div class="tc-step-pill"><span class="tc-step-num" style="color: #F59E0B;">02</span><span>Bayar cepat via Midtrans (QRIS / E-Wallet / VA)</span></div>
+                        <div class="tc-step-pill"><span class="tc-step-num" style="color: #34D399;">03</span><span>Ambil di konter begitu status Siap Diambil</span></div>
+                    </div>
                 </div>
-                <h2 class="mb-4 fw-bold text-maroon">Daftar Akun</h2>
+            </div>
+
+            <div class="small" style="color: #94A3B8;">Sistem Informasi Kantin Telkom University</div>
+        </div>
+
+        <div class="tc-auth-panel">
+            <div class="w-100" style="max-width: 440px;">
+                <a href="{{ route('home') }}" class="text-secondary text-decoration-none small fw-semibold d-inline-flex align-items-center gap-1 mb-4">
+                    <i class="bi bi-arrow-left"></i>Kembali ke Beranda
+                </a>
+
+                <h2 class="tc-display h3 fw-bold mb-1">Buat Akun Baru</h2>
+                <p class="text-secondary small mb-4">Lengkapi data di bawah untuk mulai memesan.</p>
 
                 @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
+                    <div class="alert alert-danger border-0 rounded-4 small mb-4">
+                        <ul class="mb-0 ps-3">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -56,33 +58,37 @@
                 <form action="{{ route('register') }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label for="name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required autofocus>
+                        <label for="name" class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" placeholder="Contoh: Raka Pratama" required autofocus>
                     </div>
                     <div class="mb-3">
-                        <label for="identity_number" class="form-label">Identity Number (NIM/NIP/Phone) <span class="text-muted">(Optional)</span></label>
-                        <input type="text" class="form-control" id="identity_number" name="identity_number" value="{{ old('identity_number') }}">
+                        <label for="identity_number" class="form-label">Nomor Identitas — NIM / NIP / No. HP <span class="text-muted fw-normal">(Opsional)</span></label>
+                        <input type="text" class="form-control" id="identity_number" name="identity_number" value="{{ old('identity_number') }}" placeholder="Contoh: 1202220001">
                     </div>
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required>
+                        <label for="email" class="form-label">Alamat Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" placeholder="nama@email.com" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label for="password" class="form-label">Kata Sandi</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Min. 8 karakter" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="password_confirmation" class="form-label">Konfirmasi Kata Sandi</label>
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Ulangi kata sandi" required>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="password_confirmation" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
-                    </div>
-                    <button type="submit" class="btn btn-maroon w-100 py-2">Daftar Akun</button>
+                    <button type="submit" class="btn btn-tc-primary w-100 py-3">Daftar Akun</button>
                 </form>
-                <div class="mt-3 text-center">
-                    <p>Sudah punya akun? <a href="{{ route('login') }}" class="text-maroon fw-bold">Masuk</a></p>
-                </div>
+
+                <p class="mt-4 text-center small text-secondary mb-0">
+                    Sudah punya akun?
+                    <a href="{{ route('login') }}" class="text-maroon fw-bold text-decoration-none">Masuk di sini</a>
+                </p>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,96 +1,107 @@
 @extends('layouts.tenant')
 
+@section('title', 'Riwayat Penjualan — Panel Tenant')
+
 @section('content')
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#manualOrderModal">
-                    <i class="bi bi-plus-circle"></i> Tambah Manual
-                </button>
-                <a href="{{ route('tenant.orders.pdf', request()->query()) }}" target="_blank" class="btn btn-outline-danger">
-                    <i class="bi bi-printer"></i> Cetak Laporan
-                </a>
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="tc-display h4 fw-bold mb-1">Riwayat Penjualan</h1>
+            <p class="text-secondary small mb-0">Rekap transaksi selesai dan pencatatan pesanan langsung (walk-in).</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-tc-emerald btn-sm px-3 py-2" data-bs-toggle="modal" data-bs-target="#manualOrderModal">
+                <i class="bi bi-plus-circle me-1"></i>Catat Pesanan Langsung
+            </button>
+            <a href="{{ route('tenant.orders.pdf', request()->query()) }}" target="_blank" class="btn btn-tc-outline btn-sm px-3 py-2 text-decoration-none">
+                <i class="bi bi-printer me-1"></i>Cetak Laporan PDF
+            </a>
+        </div>
+    </div>
+
+    @if(session('success'))
+        <div class="alert alert-success border-0 rounded-4 mb-4">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger border-0 rounded-4 mb-4">{{ session('error') }}</div>
+    @endif
+
+    {{-- Bento Summary & Date Filter --}}
+    <div class="row g-3 mb-4">
+        <div class="col-lg-5">
+            <div class="tc-card-dark p-4 h-100 d-flex flex-column justify-content-between">
+                <span class="small fw-semibold" style="color: #CBD5E1;">Total Pendapatan (Sesuai Filter)</span>
+                <div class="tc-mono fw-bold mt-2 mb-1" style="font-size: clamp(1.65rem, 2.8vw, 2.25rem);">
+                    Rp {{ number_format($totalRevenue, 0, ',', '.') }}
+                </div>
+                <span class="small" style="color: #94A3B8;">Dari {{ $orders->count() }} transaksi selesai</span>
             </div>
         </div>
-
-    <!-- Summary Card -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card bg-maroon text-white shadow">
-                <div class="card-body py-4 text-center">
-                    <h5 class="card-title opacity-75">Total Pendapatan (Filtered)</h5>
-                    <h1 class="display-4 fw-bold">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h1>
-                </div>
+        <div class="col-lg-7">
+            <div class="tc-card p-4 h-100 d-flex align-items-center">
+                <form action="{{ route('tenant.orders.history') }}" method="GET" class="row g-3 align-items-end w-100">
+                    <div class="col-sm-4">
+                        <label for="startDate" class="form-label">Dari Tanggal</label>
+                        <input type="date" id="startDate" name="start_date" class="form-control" value="{{ request('start_date') }}">
+                    </div>
+                    <div class="col-sm-4">
+                        <label for="endDate" class="form-label">Sampai Tanggal</label>
+                        <input type="date" id="endDate" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                    </div>
+                    <div class="col-sm-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-tc-primary w-100">Terapkan</button>
+                        @if(request('start_date') || request('end_date'))
+                            <a href="{{ route('tenant.orders.history') }}" class="btn btn-tc-ghost px-3" title="Reset"><i class="bi bi-arrow-counterclockwise"></i></a>
+                        @endif
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form action="{{ route('tenant.orders.history') }}" method="GET" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label">Dari Tanggal</label>
-                    <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">Sampai Tanggal</label>
-                    <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-filter"></i> Terapkan Filter
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="card shadow-sm">
-        <div class="card-body p-0">
-            <table class="table table-hover table-striped mb-0 text-center align-middle">
-                <thead class="bg-light">
+    {{-- Sales Table --}}
+    <div class="tc-table-wrap">
+        <div class="table-responsive">
+            <table class="table tc-table">
+                <thead>
                     <tr>
-                        <th>ID Order</th>
+                        <th class="ps-4">ID Pesanan</th>
                         <th>Tanggal</th>
                         <th>Pelanggan</th>
-                        <th>Menu</th>
+                        <th>Rincian Menu</th>
                         <th class="text-end">Total</th>
-                        <th>Aksi</th>
+                        <th class="pe-4 text-end">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($orders as $order)
                         <tr>
-                            <td>#{{ $order->id_order }}</td>
-                            <td class="order-date" data-date="{{ $order->created_at->format('Y-m-d') }}">
-                                {{ $order->created_at->format('d M Y H:i') }}
-                                <!-- Badge Holiday will be inserted here by JS -->
+                            <td class="ps-4 tc-mono fw-bold">#{{ $order->id_order }}</td>
+                            <td class="order-date small tc-num" data-date="{{ $order->created_at->format('Y-m-d') }}">
+                                {{ $order->created_at->format('d M Y, H:i') }}
                             </td>
-                            <td>{{ $order->user->name ?? 'Walk-in / Manual' }}</td>
-                            <td class="text-start">
-                                <ul class="list-unstyled mb-0 small">
+                            <td class="fw-medium">{{ $order->user->name ?? 'Langsung di Konter' }}</td>
+                            <td>
+                                <ul class="list-unstyled mb-0 small text-secondary">
                                     @foreach($order->orderDetails as $detail)
-                                        <li>- {{ $detail->menu->name ?? 'Menu Terhapus' }} (x{{ $detail->qty }})</li>
+                                        <li>{{ $detail->menu->name ?? 'Menu Terhapus' }} <span class="tc-mono">(x{{ $detail->qty }})</span></li>
                                     @endforeach
                                 </ul>
                             </td>
-                            <td class="text-end fw-bold">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
-                            <td>
-                                <!-- Tombol Hapus (Hanya untuk Admin/Tenant yang berhak, misal semua tenant boleh hapus history mereka sendiri) -->
-                                <form action="{{ route('tenant.orders.destroy', $order->id_order) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus riwayat pesanan ini? Data tidak bisa dikembalikan.');">
+                            <td class="text-end fw-bold tc-mono">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                            <td class="pe-4 text-end">
+                                <form action="{{ route('tenant.orders.destroy', $order->id_order) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus riwayat pesanan ini? Data tidak bisa dikembalikan.');" class="m-0">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash"></i> Hapus
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                        <i class="bi bi-trash me-1"></i>Hapus
                                     </button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4 text-muted">Belum ada data penjualan.</td>
+                            <td colspan="6" class="text-center py-5 text-secondary">Belum ada data penjualan pada rentang waktu ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -99,27 +110,27 @@
     </div>
 </div>
 
-<!-- Modal Tambah Pesanan Manual -->
-<div class="modal fade" id="manualOrderModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
+{{-- Manual Walk-in Order Modal --}}
+<div class="modal fade" id="manualOrderModal" tabindex="-1" aria-labelledby="manualOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 p-2" style="border-radius: 24px;">
             <form action="{{ route('tenant.orders.storeManual') }}" method="POST">
                 @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title">Tambah Pesanan Manual (Offline)</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="tc-display fw-bold mb-0" id="manualOrderModalLabel">Catat Pesanan Langsung (Konter)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Tanggal Transaksi</label>
-                        <input type="date" name="transaction_date" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        <label for="manualDate" class="form-label">Tanggal Transaksi</label>
+                        <input type="date" id="manualDate" name="transaction_date" class="form-control" value="{{ date('Y-m-d') }}" required>
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label d-flex justify-content-between">
-                            <span>Item Menu</span>
-                            <button type="button" class="btn btn-xs btn-primary py-0" onclick="addManualItem()">+ Tambah Item</button>
-                        </label>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label mb-0">Daftar Menu</label>
+                            <button type="button" class="btn btn-tc-ghost btn-sm py-1 px-3" onclick="addManualItem()">+ Tambah Baris</button>
+                        </div>
                         <div id="manual-items-container">
                             <div class="row g-2 mb-2 item-row">
                                 <div class="col-8">
@@ -127,97 +138,71 @@
                                         <option value="">Pilih Menu...</option>
                                         @foreach($menus as $menu)
                                             <option value="{{ $menu->id_menu }}">
-                                                {{ $menu->name }} - Rp {{ number_format($menu->price, 0, ',', '.') }}
+                                                {{ $menu->name }} — Rp {{ number_format($menu->price, 0, ',', '.') }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-4">
-                                    <input type="number" name="items[0][qty]" class="form-control" placeholder="Qty" min="1" value="1" required>
+                                    <input type="number" name="items[0][qty]" class="form-control tc-mono" placeholder="Jml" min="1" value="1" required>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-success">Simpan Pesanan</button>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-tc-ghost px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-tc-primary px-4">Simpan Transaksi</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+@push('scripts')
 <script>
     let itemIndex = 1;
     function addManualItem() {
         const container = document.getElementById('manual-items-container');
         const firstRow = container.querySelector('.item-row');
         const newRow = firstRow.cloneNode(true);
-        
-        // Update name attributes using Regex or simple replacement
         newRow.innerHTML = newRow.innerHTML.replace(/items\[0\]/g, `items[${itemIndex}]`);
-        
-        // Reset values
-        newRow.querySelector('select').value = "";
-        newRow.querySelector('input').value = "1";
-        
+        newRow.querySelector('select').value = '';
+        newRow.querySelector('input').value = '1';
         container.appendChild(newRow);
         itemIndex++;
     }
-</script>
 
-<style>
-    .bg-maroon { background-color: #800000; }
-    .text-maroon { color: #800000; }
-</style>
-
-<script>
     document.addEventListener('DOMContentLoaded', function() {
         const year = new Date().getFullYear();
         const apiUrl = `https://api-harilibur.vercel.app/api?year=${year}`;
-
-        // Helper: Normalisasi tanggal agar selalu YYYY-MM-DD (misal: 2026-1-1 jadi 2026-01-01)
         const normalizeDate = (dateStr) => {
             const parts = dateStr.split('-');
             if (parts.length !== 3) return dateStr;
-            const y = parts[0];
-            const m = parts[1].padStart(2, '0');
-            const d = parts[2].padStart(2, '0');
-            return `${y}-${m}-${d}`;
+            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
         };
 
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
                 const holidays = {};
-                
-                // Mapping data API dengan normalisasi tanggal
-                data.forEach(h => {
-                    const cleanDate = normalizeDate(h.holiday_date);
-                    holidays[cleanDate] = h.holiday_name;
-                });
+                data.forEach(h => { holidays[normalizeDate(h.holiday_date)] = h.holiday_name; });
 
-                // Cek setiap baris tabel
                 document.querySelectorAll('.order-date').forEach(el => {
-                    const dateStr = el.getAttribute('data-date'); // Format di HTML: YYYY-MM-DD
-                    
+                    const dateStr = el.getAttribute('data-date');
                     if (holidays[dateStr]) {
-                        // Hapus badge lama jika ada (untuk menghindari duplikasi saat refresh manual)
                         const oldBadge = el.querySelector('.badge-holiday');
-                        if(oldBadge) oldBadge.remove();
-
-                        // Render Badge Baru
+                        if (oldBadge) oldBadge.remove();
                         const badge = document.createElement('span');
-                        badge.className = 'badge bg-info text-dark ms-2 badge-holiday';
-                        badge.style.fontSize = '0.75em';
-                        badge.innerHTML = `<i class="bi bi-calendar-event me-1"></i> ${holidays[dateStr]}`;
+                        badge.className = 'tc-badge tc-badge-amber ms-2 badge-holiday';
+                        badge.innerHTML = `<i class="bi bi-calendar-event"></i>${holidays[dateStr]}`;
                         badge.title = 'Hari Libur Nasional';
                         el.appendChild(badge);
                     }
                 });
             })
-            .catch(err => console.error('Gagal mengambil data hari libur:', err));
+            .catch(() => {});
     });
 </script>
+@endpush
 @endsection

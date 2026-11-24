@@ -1,116 +1,188 @@
 @extends('layouts.app')
 
 @section('content')
+    @include('components.hero', ['categories' => $categories, 'menus' => $menus])
 
-    @include('components.hero', ['categories' => $categories])
+    <section class="tc-catalog-sheet" id="katalog-menu">
+        <div class="container">
+            @if(session('success'))
+                <div class="alert alert-success border-0 rounded-4 d-flex align-items-center justify-content-between mb-4 px-4 py-3" role="alert">
+                    <span class="fw-semibold"><i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger border-0 rounded-4 d-flex align-items-center justify-content-between mb-4 px-4 py-3" role="alert">
+                    <span class="fw-semibold"><i class="bi bi-exclamation-circle-fill me-2"></i>{{ session('error') }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+                </div>
+            @endif
 
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h3 class="fw-bold text-dark">Mau Mam Apa?</h3>
-            <p class="text-secondary">Pilih kategori menu favoritmu hari ini</p>
-            
-            <div class="d-flex justify-content-center gap-4 mt-4 flex-wrap">
-                <a href="{{ route('home') }}" class="text-decoration-none text-center group" data-aos="fade-up" data-aos-delay="0">
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm border hover-card" 
-                         style="width: 80px; height: 80px;">
-                        <span class="fs-1">🍽️</span>
-                    </div>
-                    <span class="fw-bold text-dark small">Semua</span>
-                </a>
-                <a href="{{ route('home', ['menu_category' => 'Makanan']) }}" class="text-decoration-none text-center group" data-aos="fade-up" data-aos-delay="100">
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm border hover-card" 
-                         style="width: 80px; height: 80px;">
-                        <span class="fs-1">🍚</span>
-                    </div>
-                    <span class="fw-bold text-dark small">Makanan</span>
-                </a>
-                <a href="{{ route('home', ['menu_category' => 'Minuman']) }}" class="text-decoration-none text-center group" data-aos="fade-up" data-aos-delay="200">
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm border hover-card" 
-                         style="width: 80px; height: 80px;">
-                        <span class="fs-1">🥤</span>
-                    </div>
-                    <span class="fw-bold text-dark small">Minuman</span>
-                </a>
-                <a href="{{ route('home', ['menu_category' => 'Snack']) }}" class="text-decoration-none text-center group" data-aos="fade-up" data-aos-delay="300">
-                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-2 shadow-sm border hover-card" 
-                         style="width: 80px; height: 80px;">
-                        <span class="fs-1">🍟</span>
-                    </div>
-                    <span class="fw-bold text-dark small">Snack</span>
-                </a>
-            </div>
-        </div>
+            {{-- Catalog Header & Category Pills --}}
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-end gap-3 mb-4">
+                <div>
+                    <h2 class="tc-display fw-bold mb-1" style="font-size: clamp(1.55rem, 2.5vw, 2rem);">Menu Kantin Hari Ini</h2>
+                    <p class="text-secondary mb-0">Hidangan terbaru dari gerai kantin yang sedang buka hari ini.</p>
+                </div>
 
-        <!-- Business Value Section -->
-        <div class="row g-4 mb-5" data-aos="fade-up">
-            <div class="col-md-4">
-                <div class="p-4 bg-white rounded-4 shadow-sm h-100 text-center hover-card">
-                    <div class="mb-3 text-maroon fs-1">⚡</div>
-                    <h5 class="fw-bold text-dark">Pemesanan Cepat</h5>
-                    <p class="text-secondary small mb-0">Pesan dari mana saja, ambil saat sudah siap. Tanpa antri.</p>
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <div class="tc-cat-pills" role="navigation" aria-label="Filter kategori menu">
+                        <a href="{{ route('home') }}#katalog-menu"
+                           class="tc-cat-pill {{ !request('menu_category') ? 'is-active' : '' }}">
+                            Semua
+                        </a>
+                        <a href="{{ route('home', ['menu_category' => 'Makanan']) }}#katalog-menu"
+                           class="tc-cat-pill {{ request('menu_category') == 'Makanan' ? 'is-active' : '' }}">
+                            <i class="bi bi-egg-fried" aria-hidden="true"></i>Makanan
+                        </a>
+                        <a href="{{ route('home', ['menu_category' => 'Minuman']) }}#katalog-menu"
+                           class="tc-cat-pill {{ request('menu_category') == 'Minuman' ? 'is-active' : '' }}">
+                            <i class="bi bi-cup-straw" aria-hidden="true"></i>Minuman
+                        </a>
+                        <a href="{{ route('home', ['menu_category' => 'Snack']) }}#katalog-menu"
+                           class="tc-cat-pill {{ request('menu_category') == 'Snack' ? 'is-active' : '' }}">
+                            <i class="bi bi-box2-heart" aria-hidden="true"></i>Snack
+                        </a>
+                    </div>
+                    <a href="{{ route('menus.index', ['menu_category' => request('menu_category')]) }}" class="fw-bold text-maroon text-decoration-none small">
+                        Lihat Katalog Lengkap <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="p-4 bg-white rounded-4 shadow-sm h-100 text-center hover-card">
-                    <div class="mb-3 text-maroon fs-1">🛡️</div>
-                    <h5 class="fw-bold text-dark">Higienis & Aman</h5>
-                    <p class="text-secondary small mb-0">Standar kebersihan terjamin dari tenant-tenant terpercaya.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-4 bg-white rounded-4 shadow-sm h-100 text-center hover-card">
-                    <div class="mb-3 text-maroon fs-1">💳</div>
-                    <h5 class="fw-bold text-dark">Pembayaran Mudah</h5>
-                    <p class="text-secondary small mb-0">Dukung berbagai metode pembayaran digital.</p>
-                </div>
-            </div>
-        </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 class="fw-bold text-dark mb-1">Rekomendasi Menu</h3>
-                <p class="text-secondary mb-0 small">Pilihan favorit pelanggan minggu ini</p>
-            </div>
-            <a href="{{ route('menus.index', ['menu_category' => request('menu_category')]) }}" class="text-maroon fw-bold text-decoration-none">Lihat Semua <i class="bi bi-arrow-right"></i></a>
-        </div>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-@foreach($menus as $menu)
-            <div class="col" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
-                <div class="card h-100 border hover-card rounded-4 overflow-hidden border-0 shadow-sm">
-                    <img src="{{ Str::startsWith($menu->image, 'http') ? $menu->image : asset('storage/' . $menu->image) }}" class="card-img-top object-fit-cover" height="200" alt="{{ $menu->name }}">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h5 class="fw-bold text-dark mb-0">{{ $menu->name }}</h5>
-                                <a href="{{ route('tenant.show', $menu->tenant->id_tenant) }}" class="text-decoration-none d-block mt-1">
-                                    <span class="small text-secondary"><i class="bi bi-shop me-1"></i>{{ $menu->tenant->name }}</span>
-                                    <span class="badgex small text-muted ms-1 border-start ps-2">{{ $menu->tenant->category }}</span>
-                                </a>
+            {{-- Menu Grid --}}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                @forelse($menus as $menu)
+                    <div class="col">
+                        <article class="tc-menu-card">
+                            <div class="tc-menu-thumb">
+                                <img src="{{ \Illuminate\Support\Str::startsWith($menu->image, 'http') ? $menu->image : asset('storage/' . $menu->image) }}"
+                                     alt="{{ $menu->name }}" loading="lazy">
+                                @if($menu->stock > 0)
+                                    <span class="position-absolute top-0 start-0 m-3 tc-badge tc-badge-emerald-solid">
+                                        <span class="tc-dot bg-white"></span>Buka
+                                    </span>
+                                    <span class="position-absolute top-0 end-0 m-3 tc-badge tc-badge-dark tc-num" style="font-size: 0.74rem;">
+                                        Stok {{ $menu->stock }}
+                                    </span>
+                                @else
+                                    <span class="position-absolute top-0 end-0 m-3 tc-badge tc-badge-danger" style="font-size: 0.74rem;">
+                                        Habis
+                                    </span>
+                                @endif
                             </div>
-                            <span class="fw-bold text-success">{{ number_format($menu->price, 0, ',', '.') }}</span>
-                        </div>
-                        
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="bi bi-star-fill text-warning small me-1"></i>
-                            <span class="fw-bold small me-1">{{ $menu->reviews_avg_rating ? number_format($menu->reviews_avg_rating, 1) : '0.0' }}</span>
-                            <span class="text-secondary small">({{ $menu->reviews_count }})</span>
-                        </div>
-                        
-                        <p class="card-text text-secondary small mb-3">{{ Str::limit($menu->description, 50) }}</p>
 
-                        @if($menu->stock > 0)
-                            <form action="{{ route('cart.add', $menu->id_menu) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-outline-maroon w-100 fw-bold btn-sm">Pesan</button>
-                            </form>
-                        @else
-                            <button class="btn btn-secondary w-100 fw-bold btn-sm" disabled>Habis</button>
-                        @endif
+                            <div class="tc-menu-body">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                    <h3 class="tc-menu-title mb-0">{{ $menu->name }}</h3>
+                                    @if($menu->reviews_count > 0)
+                                        <span class="d-inline-flex align-items-center gap-1 small fw-bold flex-shrink-0" style="color: var(--tc-ink);">
+                                            <i class="bi bi-star-fill" style="color: var(--tc-amber); font-size: 0.8rem;"></i>
+                                            <span class="tc-num">{{ number_format($menu->reviews_avg_rating, 1) }}</span>
+                                        </span>
+                                    @endif
+                                </div>
+
+                                <div class="mb-2">
+                                    <a href="{{ route('tenant.show', $menu->tenant->id_tenant) }}" class="tc-menu-tenant">
+                                        <i class="bi bi-shop"></i>
+                                        <span>{{ $menu->tenant->name }}</span>
+                                        @if($menu->tenant->category)
+                                            <span class="text-muted">· {{ $menu->tenant->category }}</span>
+                                        @endif
+                                    </a>
+                                </div>
+
+                                <p class="tc-menu-desc">{{ \Illuminate\Support\Str::limit($menu->description, 65) }}</p>
+
+                                <div class="tc-menu-foot">
+                                    <span class="tc-menu-price">Rp {{ number_format($menu->price, 0, ',', '.') }}</span>
+                                    @if($menu->stock > 0)
+                                        <form action="{{ route('cart.add', $menu->id_menu) }}" method="POST" class="m-0">
+                                            @csrf
+                                            <button type="submit" class="btn btn-tc-primary btn-sm px-3 py-2">
+                                                <i class="bi bi-plus-lg me-1"></i>Pesan
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button type="button" class="btn btn-tc-ghost btn-sm px-3 py-2" disabled>Habis</button>
+                                    @endif
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                @empty
+                    <div class="col-12">
+                        <div class="tc-card p-5 text-center">
+                            <i class="bi bi-search fs-2 text-muted d-block mb-2"></i>
+                            <h3 class="tc-display h5 fw-bold mb-1">Belum ada menu pada kategori ini</h3>
+                            <p class="text-secondary small mb-3">Coba lihat semua menu atau jelajahi area kantin lainnya.</p>
+                            <a href="{{ route('menus.index') }}" class="btn btn-tc-primary btn-sm">Lihat Semua Menu</a>
+                        </div>
+                    </div>
+                @endforelse
+            </div>
+
+            {{-- Asymmetric 2-Panel Bento Directory Strip (Refusing 3-Equal-Cards Default) --}}
+            <div class="tc-zones-band">
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-lg-7">
+                        <div class="tc-area-index">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="tc-display h4 fw-bold text-white mb-0">Area Kantin Kampus</h2>
+                                <a href="{{ route('search') }}" class="small fw-semibold text-white-50 text-decoration-none">Semua gerai &rarr;</a>
+                            </div>
+
+                            <a href="{{ route('search', ['location' => 'TULT']) }}" class="tc-area-row">
+                                <div>
+                                    <div class="tc-display fw-bold fs-6">Kantin TULT</div>
+                                    <div class="small tc-dark-copy">Gedung TULT Lantai 1 · Gerai makanan utama dan minuman segar</div>
+                                </div>
+                                <i class="bi bi-arrow-up-right flex-shrink-0"></i>
+                            </a>
+
+                            <a href="{{ route('search', ['location' => 'GKU']) }}" class="tc-area-row">
+                                <div>
+                                    <div class="tc-display fw-bold fs-6">Kantin GKU</div>
+                                    <div class="small tc-dark-copy">Gedung Kuliah Umum · Pilihan praktis di sela pergantian kelas</div>
+                                </div>
+                                <i class="bi bi-arrow-up-right flex-shrink-0"></i>
+                            </a>
+
+                            <a href="{{ route('search', ['location' => 'Pujasera']) }}" class="tc-area-row">
+                                <div>
+                                    <div class="tc-display fw-bold fs-6">Pujasera Kampus</div>
+                                    <div class="small tc-dark-copy">Area Pujasera · Beragam gerai kuliner dalam satu titik pengambilan</div>
+                                </div>
+                                <i class="bi bi-arrow-up-right flex-shrink-0"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="tc-area-cta">
+                            <div>
+                                <h2 class="tc-display h3 fw-bold text-white mb-2">Satu keranjang lintas gerai, satu kali bayar.</h2>
+                                <p class="small mb-0" style="color: rgba(255,255,255,0.9); line-height: 1.55;">
+                                    Gabungkan makanan dan minuman dari beberapa tenant sekaligus. Begitu pembayaran Midtrans lunas, setiap dapur langsung menyiapkan pesananmu.
+                                </p>
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a href="{{ route('menus.index') }}" class="btn btn-tc-dark px-4 py-2 text-decoration-none">
+                                    Jelajahi Semua Menu <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                                @auth
+                                    @if(Auth::user()->role !== 'admin')
+                                        <a href="{{ route('orders.history') }}" class="btn px-4 py-2 rounded-pill fw-bold text-white text-decoration-none" style="background: rgba(16,24,32,0.22);">
+                                            Pantau Pesanan
+                                        </a>
+                                    @endif
+                                @endauth
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            @endforeach
         </div>
-    </div>
+    </section>
 @endsection

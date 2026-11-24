@@ -1,78 +1,67 @@
 @extends('layouts.admin')
 
+@section('title', 'Ringkasan — Panel Admin TelyuCan')
+
 @section('content')
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold text-maroon">Dashboard</h2>
-            <p class="text-secondary">Selamat Datang, {{ Auth::user()->name }}</p>
-        </div>
+<div class="container-fluid px-0">
+    <div class="mb-4">
+        <h1 class="tc-display h4 fw-bold mb-1">Ringkasan Operasional</h1>
+        <p class="text-secondary small mb-0">Selamat datang, {{ Auth::user()->name }}. Pantau status gerai kantin dan akses cepat pengelolaan.</p>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row g-4 mb-5">
-        <!-- Total Tenants -->
+    <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
-                        <i class="bi bi-shop fs-3 text-primary"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-secondary text-uppercase small fw-bold mb-1">Total Tenant</h6>
-                        <h3 class="fw-bold mb-0 text-dark">{{ $totalTenants }}</h3>
-                    </div>
+            <div class="tc-card-dark p-4 h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small fw-semibold" style="color: #CBD5E1;">Total Tenant Terdaftar</span>
+                    <span class="rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: rgba(255,255,255,0.1); color: #FFFFFF;">
+                        <i class="bi bi-shop"></i>
+                    </span>
                 </div>
-            </div>
-        </div>
-        
-        <!-- Active Tenants -->
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
-                        <i class="bi bi-check-circle fs-3 text-success"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-secondary text-uppercase small fw-bold mb-1">Tenant Buka</h6>
-                        <h3 class="fw-bold mb-0 text-dark">{{ $activeTenants }}</h3>
-                    </div>
-                </div>
+                <div class="tc-mono fw-bold display-6 text-white mb-0">{{ $totalTenants }}</div>
             </div>
         </div>
 
-        <!-- Inactive Tenants -->
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex align-items-center">
-                    <div class="rounded-circle bg-secondary bg-opacity-10 p-3 me-3">
-                        <i class="bi bi-shop-window fs-3 text-secondary"></i>
-                    </div>
-                    <div>
-                        <h6 class="text-secondary text-uppercase small fw-bold mb-1">Tenant Tutup</h6>
-                        <h3 class="fw-bold mb-0 text-dark">{{ $inactiveTenants }}</h3>
-                    </div>
+            <div class="tc-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small fw-semibold text-secondary">Tenant Sedang Buka</span>
+                    <span class="rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: var(--tc-emerald-soft); color: var(--tc-emerald-ink);">
+                        <i class="bi bi-check2-circle"></i>
+                    </span>
                 </div>
+                <div class="tc-mono fw-bold display-6 mb-0" style="color: var(--tc-emerald-ink);">{{ $activeTenants }}</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="tc-card p-4 h-100 d-flex flex-column justify-content-between">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="small fw-semibold text-secondary">Tenant Sedang Tutup</span>
+                    <span class="rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: var(--tc-surface-muted); color: var(--tc-ink-secondary);">
+                        <i class="bi bi-shop-window"></i>
+                    </span>
+                </div>
+                <div class="tc-mono fw-bold display-6 text-dark mb-0">{{ $inactiveTenants }}</div>
             </div>
         </div>
     </div>
 
-    <!-- Quick Actions or Recent Activity could go here -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h6 class="fw-bold m-0 text-secondary">Aksi Cepat</h6>
-                </div>
-                <div class="card-body">
-                    <a href="{{ route('admin.tenants.create') }}" class="btn btn-outline-danger me-2"> 
-                        <i class="bi bi-plus-lg me-1"></i> Tambah Tenant Baru
-                    </a>
-                    <a href="{{ route('admin.tenants.index') }}" class="btn btn-outline-secondary">
-                        <i class="bi bi-list-ul me-1"></i> Lihat Semua Tenant
-                    </a>
-                </div>
-            </div>
+    <div class="tc-card p-4">
+        <h2 class="tc-display h6 fw-bold mb-3">Aksi Cepat Pengelolaan</h2>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.tenants.create') }}" class="btn btn-tc-primary btn-sm px-4 py-2 text-decoration-none">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Tenant Baru
+            </a>
+            <a href="{{ route('admin.tenants.index') }}" class="btn btn-tc-ghost btn-sm px-4 py-2 text-decoration-none">
+                <i class="bi bi-shop me-1"></i>Lihat Semua Tenant
+            </a>
+            <a href="{{ route('admin.users.index') }}" class="btn btn-tc-ghost btn-sm px-4 py-2 text-decoration-none">
+                <i class="bi bi-people me-1"></i>Kelola Pengguna
+            </a>
+            <a href="{{ route('admin.reviews.index') }}" class="btn btn-tc-ghost btn-sm px-4 py-2 text-decoration-none">
+                <i class="bi bi-chat-square-text me-1"></i>Moderasi Ulasan
+            </a>
         </div>
     </div>
 </div>

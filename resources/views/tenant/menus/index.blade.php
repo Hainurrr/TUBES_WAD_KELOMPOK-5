@@ -1,127 +1,108 @@
 @extends('layouts.tenant')
 
+@section('title', 'Kelola Menu — Panel Tenant')
+
 @section('content')
-<div class="container py-5">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
-            <h2 class="fw-bold text-maroon mb-1">Manajemen Menu</h2>
-            <p class="text-secondary small mb-0">Kelola daftar menu makanan dan minuman Anda.</p>
+            <h1 class="tc-display h4 fw-bold mb-1">Manajemen Menu Gerai</h1>
+            <p class="text-secondary small mb-0">Atur daftar makanan, minuman, harga, dan stok harian gerai Anda.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('tenant.menus.pdf') }}" target="_blank" class="btn btn-outline-danger">
-                <i class="bi bi-file-pdf me-2"></i>Export PDF
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('tenant.menus.pdf') }}" target="_blank" class="btn btn-tc-outline btn-sm px-3 py-2 text-decoration-none">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Cetak Daftar PDF
             </a>
-            <a href="{{ route('tenant.menus.create') }}" class="btn btn-primary fw-bold" style="background-color: #800000; border-color: #800000;">
-                <i class="bi bi-plus-lg me-2"></i>Tambah Menu
+            <a href="{{ route('tenant.menus.create') }}" class="btn btn-tc-primary btn-sm px-4 py-2 text-decoration-none">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Menu
             </a>
         </div>
     </div>
 
-    <!-- Holiday Alert -->
-    <div id="holidayAlert" class="alert alert-warning alert-dismissible fade show d-none" role="alert">
-        <div class="d-flex align-items-center">
-            <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
-            <div>
-                <strong>Peringatan:</strong> Hari ini adalah hari libur nasional. Pastikan stok Anda sesuai dengan perkiraan pengunjung.
+    {{-- Holiday Alert --}}
+    <div id="holidayAlert" class="alert alert-warning border-0 rounded-4 alert-dismissible fade show d-none mb-4" role="alert">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+            <div class="small">
+                <strong>Catatan Hari Libur Nasional:</strong> Pastikan jumlah stok harian disesuaikan dengan perkiraan pengunjung kampus hari ini.
             </div>
         </div>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
     </div>
 
-    <!-- Success Message -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success border-0 rounded-4 alert-dismissible fade show mb-4" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
         </div>
     @endif
 
-    <!-- Menu Grid -->
-    <div class="row g-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4">
         @forelse($menus as $menu)
-            <div class="col-md-6 col-lg-3">
-                <div class="card h-100 border-0 shadow-sm hover-card">
-                    <div class="position-relative">
+            <div class="col">
+                <article class="tc-menu-card">
+                    <div class="tc-menu-thumb">
                         @if($menu->image)
-                            <img src="{{ Str::startsWith($menu->image, 'http') ? $menu->image : asset('storage/' . $menu->image) }}" class="card-img-top object-fit-cover" alt="{{ $menu->name }}" style="height: 200px;">
+                            <img src="{{ \Illuminate\Support\Str::startsWith($menu->image, 'http') ? $menu->image : asset('storage/' . $menu->image) }}" alt="{{ $menu->name }}">
                         @else
-                            <div class="bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center text-secondary" style="height: 200px;">
-                                <i class="bi bi-image fs-1"></i>
+                            <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                <i class="bi bi-image fs-2"></i>
                             </div>
                         @endif
-                        
-                        <div class="position-absolute top-0 end-0 p-2">
-                            <span class="badge {{ $menu->stock > 0 ? 'bg-success' : 'bg-danger' }}">
-                                Stok: {{ $menu->stock }}
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title fw-bold text-truncate mb-0" title="{{ $menu->name }}">{{ $menu->name }}</h5>
-                        </div>
-                        <p class="text-maroon fw-bold mb-2">Rp {{ number_format($menu->price, 0, ',', '.') }}</p>
-                        <p class="card-text text-secondary small text-truncate">{{ $menu->description }}</p>
-                        
-                        <div class="mt-3">
-                            <span class="badge bg-light text-dark border">{{ $menu->category->name ?? 'Uncategorized' }}</span>
-                        </div>
+                        <span class="position-absolute top-0 start-0 m-3 tc-badge tc-badge-dark">
+                            {{ $menu->category->name ?? 'Tanpa Kategori' }}
+                        </span>
+                        <span class="position-absolute top-0 end-0 m-3 tc-badge {{ $menu->stock > 0 ? 'tc-badge-emerald-solid' : 'tc-badge-danger' }} tc-num">
+                            {{ $menu->stock > 0 ? 'Stok ' . $menu->stock : 'Habis' }}
+                        </span>
                     </div>
 
-                    <div class="card-footer bg-white border-top-0 pt-0 pb-3">
-                        <div class="d-flex gap-2">
-                            <a href="{{ route('tenant.menus.edit', $menu->id_menu) }}" class="btn btn-warning btn-sm flex-grow-1 text-white">
-                                <i class="bi bi-pencil-square me-1"></i> Edit
+                    <div class="tc-menu-body">
+                        <h2 class="tc-menu-title text-truncate" title="{{ $menu->name }}">{{ $menu->name }}</h2>
+                        <div class="tc-mono fw-bold text-maroon mb-2">Rp {{ number_format($menu->price, 0, ',', '.') }}</div>
+                        <p class="tc-menu-desc">{{ \Illuminate\Support\Str::limit($menu->description, 70) }}</p>
+
+                        <div class="d-flex gap-2 pt-3 border-top">
+                            <a href="{{ route('tenant.menus.edit', $menu->id_menu) }}" class="btn btn-tc-ghost btn-sm flex-grow-1 text-decoration-none">
+                                <i class="bi bi-pencil-square me-1"></i>Ubah
                             </a>
-                            <form action="{{ route('tenant.menus.destroy', $menu->id_menu) }}" method="POST" class="d-inline flex-grow-1" onsubmit="return confirm('Yakin ingin menghapus menu ini?');">
+                            <form action="{{ route('tenant.menus.destroy', $menu->id_menu) }}" method="POST" class="flex-grow-1 m-0" onsubmit="return confirm('Yakin ingin menghapus menu ini?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm w-100">
-                                    <i class="bi bi-trash me-1"></i> Hapus
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill w-100 fw-semibold">
+                                    <i class="bi bi-trash me-1"></i>Hapus
                                 </button>
                             </form>
                         </div>
                     </div>
-                </div>
+                </article>
             </div>
         @empty
-            <div class="col-12 py-5 text-center">
-                <div class="mb-3">
-                    <i class="bi bi-clipboard-x text-secondary" style="font-size: 4rem;"></i>
+            <div class="col-12">
+                <div class="tc-card p-5 text-center">
+                    <i class="bi bi-journal-plus fs-1 text-muted d-block mb-2"></i>
+                    <h3 class="tc-display h5 fw-bold mb-1">Belum ada menu terdaftar</h3>
+                    <p class="text-secondary small mb-3">Tambahkan menu pertama agar pelanggan mulai dapat memesan dari gerai Anda.</p>
+                    <a href="{{ route('tenant.menus.create') }}" class="btn btn-tc-primary btn-sm px-4">Tambah Menu Pertama</a>
                 </div>
-                <h4 class="text-secondary fw-bold">Belum ada menu</h4>
-                <p class="text-secondary">Silakan tambahkan menu makanan atau minuman Anda.</p>
-                <a href="{{ route('tenant.menus.create') }}" class="btn btn-primary mt-2" style="background-color: #800000; border-color: #800000;">
-                    Tambah Menu Pertama
-                </a>
             </div>
         @endforelse
     </div>
 </div>
 
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         fetch('https://dayoffapi.vercel.app/api')
             .then(response => response.json())
             .then(data => {
-                // Cek apakah hari ini libur
-                // Logika sederhana: Jika API mengembalikan tanggal yang sama dengan hari ini
                 const today = new Date().toISOString().split('T')[0];
-                const isHoliday = data.some(holiday => holiday.tanggal === today);
-
-                if (isHoliday) {
+                if (data.some(holiday => holiday.tanggal === today)) {
                     document.getElementById('holidayAlert').classList.remove('d-none');
                 }
             })
-            .catch(error => console.error('Error fetching holiday data:', error));
+            .catch(() => {});
     });
 </script>
-
-<style>
-    .text-maroon { color: #800000; }
-    .hover-card { transition: transform 0.2s; }
-    .hover-card:hover { transform: translateY(-5px); }
-</style>
+@endpush
 @endsection

@@ -1,81 +1,82 @@
 @extends('layouts.admin')
 
+@section('title', 'Kelola Pengguna — Panel Admin')
+
 @section('content')
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0 text-dark">Kelola Akun System</h2>
-        <a href="{{ route('admin.users.create') }}" class="btn text-white py-2 px-4 shadow-sm fw-bold" style="background-color: #800000;">
-            <i class="bi bi-plus-lg me-2"></i>Tambah User
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="tc-display h4 fw-bold mb-1">Kelola Pengguna Sistem</h1>
+            <p class="text-secondary small mb-0">Atur akun pelanggan, pengelola tenant, dan administrator.</p>
+        </div>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-tc-primary btn-sm px-4 py-2 text-decoration-none">
+            <i class="bi bi-plus-lg me-1"></i>Tambah Pengguna
         </a>
     </div>
 
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+        <div class="alert alert-success border-0 rounded-4 alert-dismissible fade show mb-4" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
+        </div>
     @endif
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4 py-3 border-0">Nama User</th>
-                            <th class="py-3 border-0">Email</th>
-                            <th class="py-3 border-0">Role</th>
-                            <th class="py-3 border-0">Identity Number</th>
-                            <th class="py-3 border-0 text-end pe-4">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($users as $user)
+    <div class="tc-table-wrap">
+        <div class="table-responsive">
+            <table class="table tc-table">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Nama Pengguna</th>
+                        <th>Email</th>
+                        <th>Peran</th>
+                        <th>Nomor Identitas</th>
+                        <th class="text-end pe-4">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($users as $user)
                         <tr>
                             <td class="ps-4">
-                                <div class="d-flex align-items-center">
-                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3 text-secondary fw-bold" style="width: 40px; height: 40px; border: 1px solid #e9ecef;">
-                                        {{ substr($user->name, 0, 1) }}
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white flex-shrink-0" style="width: 38px; height: 38px; background: var(--tc-obsidian);">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
                                     </div>
-                                    <span class="fw-semibold text-dark">{{ $user->name }}</span>
+                                    <span class="fw-bold text-dark">{{ $user->name }}</span>
                                 </div>
                             </td>
-                            <td class="text-secondary">{{ $user->email }}</td>
+                            <td class="text-secondary small">{{ $user->email }}</td>
                             <td>
-                                @php
-                                    $badgeColor = match($user->role) {
-                                        'admin' => 'danger',
-                                        'tenant' => 'warning',
-                                        'customer' => 'success',
-                                        default => 'secondary'
-                                    };
-                                @endphp
-                                <span class="badge bg-{{ $badgeColor }} bg-opacity-10 text-{{ $badgeColor }} px-3 py-2 rounded-pill">
-                                    {{ ucfirst($user->role) }}
-                                </span>
+                                @if($user->role === 'admin')
+                                    <span class="tc-badge tc-badge-crimson">Admin</span>
+                                @elseif($user->role === 'tenant')
+                                    <span class="tc-badge tc-badge-amber">Tenant</span>
+                                @else
+                                    <span class="tc-badge tc-badge-emerald">Pelanggan</span>
+                                @endif
                             </td>
-                            <td class="text-secondary">{{ $user->identity_number ?? '-' }}</td>
+                            <td class="text-secondary small tc-mono">{{ $user->identity_number ?? '-' }}</td>
                             <td class="text-end pe-4">
-                                <a href="{{ route('admin.users.edit', $user->id_user) }}" class="btn btn-sm btn-outline-secondary me-1">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
-                                <form action="{{ route('admin.users.destroy', $user->id_user) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </form>
+                                <div class="d-inline-flex gap-1">
+                                    <a href="{{ route('admin.users.edit', $user->id_user) }}" class="btn btn-tc-ghost btn-sm px-3" title="Ubah">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <form action="{{ route('admin.users.destroy', $user->id_user) }}" method="POST" class="m-0" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Hapus">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">Belum ada data user.</td>
+                            <td colspan="5" class="text-center py-5 text-secondary">Belum ada data pengguna.</td>
                         </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

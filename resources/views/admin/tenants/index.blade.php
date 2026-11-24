@@ -1,128 +1,130 @@
 @extends('layouts.admin')
 
+@section('title', 'Manajemen Tenant — Panel Admin')
+
 @section('content')
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0" style="color: #800000;">Daftar Tenant</h2>
-        <div class="d-flex gap-2">
-            <a href="{{ route('admin.tenants.create') }}" class="btn text-white" style="background-color: #800000;">
-                <i class="bi bi-plus-lg me-1"></i> Tambah Tenant
+<div class="container-fluid px-0">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="tc-display h4 fw-bold mb-1">Manajemen Tenant</h1>
+            <p class="text-secondary small mb-0">Kelola profil gerai kantin, lokasi area, akun pengelola, dan status operasional.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('admin.tenants.pdf') }}" target="_blank" class="btn btn-tc-outline btn-sm px-3 py-2 text-decoration-none">
+                <i class="bi bi-file-earmark-pdf me-1"></i>Cetak PDF
             </a>
-            <a href="{{ route('admin.tenants.pdf') }}" target="_blank" class="btn btn-outline-danger">
-                <i class="bi bi-file-earmark-pdf me-1"></i> Export PDF
+            <a href="{{ route('admin.tenants.create') }}" class="btn btn-tc-primary btn-sm px-4 py-2 text-decoration-none">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Tenant
             </a>
         </div>
     </div>
 
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success border-0 rounded-4 alert-dismissible fade show mb-4" role="alert">
             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
         </div>
     @endif
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-        <div class="card-body p-0">
-            <div class="p-4 border-bottom bg-light">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-secondary"></i></span>
-                            <input type="text" class="form-control border-start-0 ps-0" placeholder="Cari tenant berdasarkan nama atau pemilik...">
-                        </div>
-                    </div>
-                </div>
+    <div class="tc-table-wrap">
+        <div class="p-3 p-md-4 border-bottom bg-white">
+            <div style="max-width: 380px;">
+                <label for="tenantSearchInput" class="visually-hidden">Cari tenant</label>
+                <input type="text" id="tenantSearchInput" class="form-control" placeholder="Cari nama tenant, pemilik, atau area kantin...">
             </div>
+        </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr class="text-secondary small text-uppercase">
-                            <th scope="col" class="ps-4">Tenant</th>
-                            <th scope="col">Kategori</th>
-                            <th scope="col">Pemilik</th>
-                            <th scope="col">Kontak</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-end pe-4">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($tenants as $tenant)
-                        <tr>
+        <div class="table-responsive">
+            <table class="table tc-table" id="adminTenantsTable">
+                <thead>
+                    <tr>
+                        <th scope="col" class="ps-4">Tenant</th>
+                        <th scope="col">Area Kantin</th>
+                        <th scope="col">Pemilik &amp; Akun</th>
+                        <th scope="col">Kontak</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end pe-4">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($tenants as $tenant)
+                        <tr class="tenant-row">
                             <td class="ps-4">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center gap-3">
                                     @if($tenant->banner_image)
-                                        <img src="{{ Str::startsWith($tenant->banner_image, 'http') ? $tenant->banner_image : asset('storage/' . $tenant->banner_image) }}" alt="{{ $tenant->name }}" class="rounded-3 object-fit-cover shadow-sm me-3" width="60" height="60">
+                                        <img src="{{ \Illuminate\Support\Str::startsWith($tenant->banner_image, 'http') ? $tenant->banner_image : asset('storage/' . $tenant->banner_image) }}"
+                                             alt="{{ $tenant->name }}" class="rounded-3 object-fit-cover flex-shrink-0 border" width="52" height="52">
                                     @else
-                                        <div class="bg-secondary bg-opacity-10 rounded-3 d-flex align-items-center justify-content-center text-secondary small me-3" style="width: 60px; height: 60px;">
-                                            <i class="bi bi-image"></i>
+                                        <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 text-white fw-bold" style="width: 52px; height: 52px; background: var(--tc-obsidian);">
+                                            {{ strtoupper(substr($tenant->name, 0, 1)) }}
                                         </div>
                                     @endif
                                     <div>
-                                        <h6 class="mb-0 fw-bold text-dark">{{ $tenant->name }}</h6>
-                                        <small class="text-muted">{{ Str::limit($tenant->description, 30) }}</small>
+                                        <div class="fw-bold text-dark">{{ $tenant->name }}</div>
+                                        <small class="text-muted">{{ \Illuminate\Support\Str::limit($tenant->description, 38) }}</small>
                                     </div>
                                 </div>
                             </td>
+                            <td><span class="tc-badge tc-badge-neutral">{{ $tenant->category ?? '-' }}</span></td>
                             <td>
-                                <span class="badge bg-light text-dark border fw-normal px-3 py-2 rounded-pill">
-                                    {{ $tenant->category ?? '-' }}
-                                </span>
+                                <div class="fw-semibold text-dark small">{{ $tenant->owner_name }}</div>
+                                <small class="text-muted">{{ $tenant->user_account_name ?? 'Belum terhubung akun' }}</small>
                             </td>
                             <td>
-                                <div class="fw-medium text-dark">{{ $tenant->owner_name }}</div>
-                                <small class="text-secondary d-block">{{ $tenant->user_account_name ?? 'No Account' }}</small>
-                            </td>
-                            <td>
-                                <div class="small text-secondary"><i class="bi bi-telephone me-1"></i> {{ $tenant->phone }}</div>
-                                <div class="small text-secondary text-truncate" style="max-width: 150px;">
-                                    <i class="bi bi-geo-alt me-1"></i> {{ $tenant->city }}
-                                </div>
+                                <div class="small text-secondary tc-mono"><i class="bi bi-telephone me-1"></i>{{ $tenant->phone }}</div>
+                                <div class="small text-muted text-truncate" style="max-width: 170px;"><i class="bi bi-geo-alt me-1"></i>{{ $tenant->city }}</div>
                             </td>
                             <td>
                                 @if($tenant->is_open)
-                                    <div class="d-flex align-items-center text-success fw-medium">
-                                        <i class="bi bi-check-circle-fill me-2"></i> Buka
-                                    </div>
+                                    <span class="tc-badge tc-badge-emerald"><span class="tc-dot" style="background: var(--tc-emerald);"></span>Buka</span>
                                 @else
-                                    <div class="d-flex align-items-center text-danger fw-medium">
-                                        <i class="bi bi-dash-circle-fill me-2"></i> Tutup
-                                    </div>
+                                    <span class="tc-badge tc-badge-danger"><span class="tc-dot" style="background: var(--tc-danger);"></span>Tutup</span>
                                 @endif
                             </td>
                             <td class="text-end pe-4">
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.tenants.edit', $tenant->id_tenant) }}" class="btn btn-light btn-sm text-primary" data-bs-toggle="tooltip" title="Edit">
+                                <div class="d-inline-flex gap-1">
+                                    <a href="{{ route('admin.tenants.edit', $tenant->id_tenant) }}" class="btn btn-tc-ghost btn-sm px-3" title="Ubah">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <form action="{{ route('admin.tenants.destroy', $tenant->id_tenant) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus?')">
+                                    <form action="{{ route('admin.tenants.destroy', $tenant->id_tenant) }}" method="POST" class="m-0" onsubmit="return confirm('Yakin ingin menghapus tenant ini?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-light btn-sm text-danger" data-bs-toggle="tooltip" title="Hapus">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Hapus">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                    @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5">
-                                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486777.png" width="80" class="mb-3 opacity-25" alt="Empty">
-                                <p class="text-secondary fw-medium">Belum ada data tenant.</p>
-                            </td>
+                            <td colspan="6" class="text-center py-5 text-secondary">Belum ada data tenant terdaftar.</td>
                         </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            
-            @if($tenants instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div class="p-4 border-top">
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($tenants instanceof \Illuminate\Pagination\LengthAwarePaginator)
+            <div class="px-4 py-3 border-top">
                 {{ $tenants->links() }}
             </div>
-            @endif
-        </div>
+        @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const input = document.getElementById('tenantSearchInput');
+        if (!input) return;
+        input.addEventListener('input', function() {
+            const q = this.value.toLowerCase().trim();
+            document.querySelectorAll('#adminTenantsTable tbody .tenant-row').forEach(function(row) {
+                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+    });
+</script>
+@endpush
 @endsection
