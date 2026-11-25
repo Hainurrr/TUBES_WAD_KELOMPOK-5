@@ -1,0 +1,122 @@
+/* Global Obsidian Navbar */
+
+.tc-navbar {
+  background-color: var(--tc-obsidian);
+  border-bottom: 1px solid var(--tc-obsidian-border);
+  min-height: 76px;
+  padding-block: 0.7rem;
+  z-index: 1030;
+}
+
+.tc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  color: #FFFFFF;
+  font-family: var(--tc-font-display);
+  font-weight: 900;
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+}
+
+.tc-brand:hover {
+  color: #FFFFFF;
+}
+
+.tc-brand-dark {
+  color: var(--tc-ink);
+}
+
+.tc-brand-dark:hover {
+  color: var(--tc-ink);
+}
+
+.tc-nav-link {
+  color: var(--tc-on-dark-muted);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--tc-r-pill);
+  transition: color 180ms var(--tc-ease), background-color 180ms var(--tc-ease);
+}
+
+.tc-nav-link:hover,
+.tc-nav-link.active {
+  color: #FFFFFF;
+  background-color: rgba(255, 255, 255, 0.09);
+}
+
+.tc-nav-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--tc-r-pill);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 180ms var(--tc-ease);
+}
+
+.tc-nav-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+}
+
+.tc-nav-search {
+  position: relative;
+  width: 245px;
+  max-width: 100%;
+  flex-shrink: 1;
+}
+
+.tc-nav-search input {
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  border-radius: var(--tc-r-pill);
+  padding: 0.5rem 1rem 0.5rem 2.4rem;
+  font-size: 0.88rem;
+  height: 40px;
+}
+
+.tc-nav-search input::placeholder {
+  color: #94A3B8;
+}
+
+.tc-nav-search input:focus {
+  background-color: var(--tc-obsidian-elevated);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  box-shadow: none;
+}
+
+.tc-nav-search i {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94A3B8;
+  pointer-events: none;
+}
+
+.tc-dropdown-menu {
+  border-radius: 20px;
+  border: 1px solid var(--tc-border);
+  box-shadow: var(--tc-shadow-lg);
+  padding: 0.5rem;
+}
+
+.tc-dropdown-menu .dropdown-item {
+  border-radius: 12px;
+  padding: 0.55rem 0.85rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.tc-dropdown-menu .dropdown-item:hover {
+  background-color: var(--tc-surface-muted);
+}

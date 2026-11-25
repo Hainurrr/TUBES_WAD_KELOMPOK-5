@@ -5,19 +5,15 @@
                 <div class="col-lg-5 d-none d-lg-flex flex-column justify-content-between p-4 p-xl-5 text-white" style="background-color: var(--tc-obsidian);">
                     <div>
                         <div class="tc-brand mb-4">
-                            <svg width="32" height="32" viewBox="0 0 36 36" fill="none" aria-hidden="true">
-                                <rect width="36" height="36" rx="11" fill="#B9112E"/>
-                                <path d="M9.5 11.5H26.5V15.5H20.25V26H15.75V15.5H9.5V11.5Z" fill="#FFFFFF"/>
-                                <rect x="21.5" y="21.5" width="5" height="4.5" rx="1.5" fill="#F59E0B"/>
-                            </svg>
+                            <x-brand-logo :size="32" />
                             <span>TelyuCan</span>
                         </div>
                         <h3 class="tc-display fw-bold h3 mb-3">Pesan cepat dari kelas, ambil tanpa antri.</h3>
-                        <p class="small mb-0" style="color: #CBD5E1; line-height: 1.55;">Masuk untuk menyimpan keranjang multi-gerai, membayar lewat Midtrans, dan memantau progres dapur secara langsung.</p>
+                        <p class="small mb-0 tc-dark-copy" style="line-height: 1.55;">Masuk untuk menyimpan keranjang multi-gerai, membayar secara non-tunai, dan memantau progres dapur secara langsung.</p>
                     </div>
-                    <div class="d-flex flex-column gap-2 small" style="color: #CBD5E1;">
+                    <div class="d-flex flex-column gap-2 small tc-dark-copy">
                         <div><i class="bi bi-check2-circle me-2" style="color: #34D399;"></i>Pilih kantin TULT, GKU, dan Pujasera</div>
-                        <div><i class="bi bi-check2-circle me-2" style="color: #34D399;"></i>Pembayaran digital QRIS &amp; E-Wallet</div>
+                        <div><i class="bi bi-check2-circle me-2" style="color: #34D399;"></i>Pembayaran digital cepat &amp; otomatis</div>
                         <div><i class="bi bi-check2-circle me-2" style="color: #34D399;"></i>Notifikasi saat pesanan siap diambil</div>
                     </div>
                 </div>
@@ -28,14 +24,14 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                     </div>
 
-                    <ul class="nav nav-pills nav-fill mb-4 p-1 rounded-pill" style="background-color: var(--tc-surface-muted);" id="authTabs" role="tablist">
+                    <ul class="nav nav-pills nav-fill tc-auth-tabs mb-4" id="authTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active rounded-pill fw-bold small py-2" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">
+                            <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">
                                 Masuk
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link rounded-pill fw-bold small py-2" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab">
+                            <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register" type="button" role="tab">
                                 Daftar
                             </button>
                         </li>
@@ -77,11 +73,11 @@
                                     <input type="text" id="modalRegIdentity" name="identity_number" class="form-control" placeholder="Nomor identitas kampus">
                                 </div>
                                 <div class="row g-2 mb-3">
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <label for="modalRegPass" class="form-label">Kata Sandi</label>
                                         <input type="password" id="modalRegPass" name="password" class="form-control" placeholder="Min. 8 karakter" required>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-12 col-sm-6">
                                         <label for="modalRegPassConf" class="form-label">Konfirmasi</label>
                                         <input type="password" id="modalRegPassConf" name="password_confirmation" class="form-control" placeholder="Ulangi sandi" required>
                                     </div>
@@ -95,23 +91,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('#authTabs .nav-link');
-        function syncAuthTabs(activeTab) {
-            tabs.forEach(function(t) {
-                t.style.backgroundColor = 'transparent';
-                t.style.color = '#4B5563';
-            });
-            if (activeTab) {
-                activeTab.style.backgroundColor = '#101820';
-                activeTab.style.color = '#FFFFFF';
-            }
-        }
-        tabs.forEach(function(tab) {
-            tab.addEventListener('show.bs.tab', function(event) { syncAuthTabs(event.target); });
-        });
-        syncAuthTabs(document.querySelector('#authTabs .nav-link.active'));
-    });
-</script>

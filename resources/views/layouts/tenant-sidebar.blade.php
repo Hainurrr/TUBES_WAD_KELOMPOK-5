@@ -1,14 +1,10 @@
-<div class="d-flex flex-column p-3 h-100">
-    <a href="{{ route('tenant.dashboard') }}" class="tc-brand px-2 py-2 mb-3">
-        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" class="flex-shrink-0" aria-hidden="true">
-            <rect width="36" height="36" rx="11" fill="#B9112E"/>
-            <path d="M9.5 11.5H26.5V15.5H20.25V26H15.75V15.5H9.5V11.5Z" fill="#FFFFFF"/>
-            <rect x="21.5" y="21.5" width="5" height="4.5" rx="1.5" fill="#F59E0B"/>
-        </svg>
+<div class="d-flex flex-column p-3 h-100 tc-sidebar-inner">
+    <a href="{{ route('tenant.dashboard') }}" class="tc-brand px-2 py-2 mb-3 tc-sidebar-brand">
+        <x-brand-logo :size="32" />
         <span class="sidebar-header-text">TelyuCan</span>
     </a>
 
-    <nav class="d-flex flex-row flex-lg-column gap-1 flex-wrap mb-lg-auto" aria-label="Menu tenant">
+    <nav class="d-flex flex-row flex-lg-column gap-1 flex-wrap mb-lg-auto tc-sidebar-nav" aria-label="Menu tenant">
         <a href="{{ route('tenant.dashboard') }}" class="tc-sidebar-link {{ request()->routeIs('tenant.dashboard') || request()->routeIs('tenant.orders.index') ? 'active' : '' }}">
             <i class="bi bi-fire fs-5"></i>
             <span class="sidebar-text">Layar Dapur</span>

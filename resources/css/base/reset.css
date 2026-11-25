@@ -1,0 +1,113 @@
+/* Browser Surface Theming & Typography Helpers */
+
+::selection {
+  background: var(--tc-crimson);
+  color: #FFFFFF;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #94A3B8 transparent;
+  scrollbar-width: thin;
+}
+
+body {
+  font-family: var(--tc-font-sans);
+  color: var(--tc-ink);
+  background-color: var(--tc-canvas);
+  caret-color: var(--tc-crimson);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body.tc-home-body {
+  background-color: var(--tc-obsidian);
+}
+
+main {
+  flex: 1;
+}
+
+a {
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--tc-crimson);
+  outline-offset: 2px;
+}
+
+/* Custom Webkit Scrollbar */
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 116, 139, 0.35);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(100, 116, 139, 0.6);
+}
+
+/* Typography Utilities */
+.tc-display {
+  font-family: var(--tc-font-display);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.tc-mono,
+.tc-price,
+.tc-code {
+  font-family: var(--tc-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.tc-measure {
+  max-width: 66ch;
+}
+
+.tc-dark-copy {
+  color: var(--tc-on-dark-muted);
+}
+
+/* Brand Color Helpers */
+.text-maroon {
+  color: var(--tc-crimson) !important;
+}
+
+.bg-maroon {
+  background-color: var(--tc-crimson) !important;
+  color: #FFFFFF;
+}
+
+.border-maroon {
+  border-color: var(--tc-crimson) !important;
+}
+
+/* Hide browser number input spinners where requested */
+.tc-no-spinners::-webkit-inner-spin-button,
+.tc-no-spinners::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.tc-no-spinners {
+  -moz-appearance: textfield;
+}

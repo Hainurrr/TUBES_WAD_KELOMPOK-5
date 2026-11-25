@@ -1,0 +1,104 @@
+/* Button Variants */
+
+.btn-tc-primary,
+.btn-maroon {
+  background-color: var(--tc-crimson);
+  color: #FFFFFF;
+  border: 1px solid var(--tc-crimson);
+  border-radius: var(--tc-r-pill);
+  font-weight: 700;
+  padding: 0.625rem 1.35rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 180ms var(--tc-ease), transform 180ms var(--tc-ease), box-shadow 180ms var(--tc-ease);
+}
+
+.btn-tc-primary:hover,
+.btn-maroon:hover {
+  background-color: var(--tc-crimson-hover);
+  border-color: var(--tc-crimson-hover);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(185, 17, 46, 0.24);
+}
+
+.btn-tc-primary:active,
+.btn-maroon:active {
+  transform: translateY(0);
+}
+
+.btn-tc-dark {
+  background-color: var(--tc-obsidian);
+  color: #FFFFFF;
+  border: 1px solid var(--tc-obsidian);
+  border-radius: var(--tc-r-pill);
+  font-weight: 700;
+  padding: 0.625rem 1.35rem;
+  transition: background-color 180ms var(--tc-ease), transform 180ms var(--tc-ease);
+}
+
+.btn-tc-dark:hover {
+  background-color: var(--tc-obsidian-elevated);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.btn-tc-outline,
+.btn-outline-maroon {
+  background-color: transparent;
+  color: var(--tc-crimson);
+  border: 1.5px solid var(--tc-crimson);
+  border-radius: var(--tc-r-pill);
+  font-weight: 700;
+  padding: 0.55rem 1.25rem;
+  transition: background-color 180ms var(--tc-ease), color 180ms var(--tc-ease), border-color 180ms var(--tc-ease);
+}
+
+.btn-tc-outline:hover,
+.btn-outline-maroon:hover {
+  background-color: var(--tc-crimson);
+  color: #FFFFFF;
+  border-color: var(--tc-crimson);
+}
+
+.btn-tc-ghost {
+  background-color: var(--tc-surface-muted);
+  color: var(--tc-ink);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-r-pill);
+  font-weight: 600;
+  padding: 0.55rem 1.15rem;
+  transition: background-color 180ms var(--tc-ease), border-color 180ms var(--tc-ease);
+}
+
+.btn-tc-ghost:hover {
+  background-color: #E5E9F0;
+  border-color: var(--tc-border-strong);
+  color: var(--tc-ink);
+}
+
+.btn-tc-emerald {
+  background-color: var(--tc-emerald);
+  color: #FFFFFF;
+  border: 1px solid var(--tc-emerald);
+  border-radius: var(--tc-r-pill);
+  font-weight: 700;
+  padding: 0.6rem 1.25rem;
+  transition: background-color 180ms var(--tc-ease), transform 180ms var(--tc-ease);
+}
+
+.btn-tc-emerald:hover {
+  background-color: var(--tc-emerald-hover);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.btn-tc-icon-circle {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}

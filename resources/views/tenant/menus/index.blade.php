@@ -19,8 +19,7 @@
         </div>
     </div>
 
-    {{-- Holiday Alert --}}
-    <div id="holidayAlert" class="alert alert-warning border-0 rounded-4 alert-dismissible fade show d-none mb-4" role="alert">
+    <div id="holidayAlert" data-holiday-alert class="alert alert-warning border-0 rounded-4 alert-dismissible fade show d-none mb-4" role="alert">
         <div class="d-flex align-items-center gap-3">
             <i class="bi bi-exclamation-triangle-fill fs-5"></i>
             <div class="small">
@@ -30,12 +29,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success border-0 rounded-4 alert-dismissible fade show mb-4" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
-        </div>
-    @endif
+    <x-flash-alerts />
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4">
         @forelse($menus as $menu)
@@ -79,30 +73,15 @@
             </div>
         @empty
             <div class="col-12">
-                <div class="tc-card p-5 text-center">
-                    <i class="bi bi-journal-plus fs-1 text-muted d-block mb-2"></i>
-                    <h3 class="tc-display h5 fw-bold mb-1">Belum ada menu terdaftar</h3>
-                    <p class="text-secondary small mb-3">Tambahkan menu pertama agar pelanggan mulai dapat memesan dari gerai Anda.</p>
-                    <a href="{{ route('tenant.menus.create') }}" class="btn btn-tc-primary btn-sm px-4">Tambah Menu Pertama</a>
-                </div>
+                <x-empty-state
+                    icon="bi-journal-plus"
+                    title="Belum ada menu terdaftar"
+                    description="Tambahkan menu pertama agar pelanggan mulai dapat memesan dari gerai Anda."
+                    :action-url="route('tenant.menus.create')"
+                    action-label="Tambah Menu Pertama"
+                />
             </div>
         @endforelse
     </div>
 </div>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('https://dayoffapi.vercel.app/api')
-            .then(response => response.json())
-            .then(data => {
-                const today = new Date().toISOString().split('T')[0];
-                if (data.some(holiday => holiday.tanggal === today)) {
-                    document.getElementById('holidayAlert').classList.remove('d-none');
-                }
-            })
-            .catch(() => {});
-    });
-</script>
-@endpush
 @endsection

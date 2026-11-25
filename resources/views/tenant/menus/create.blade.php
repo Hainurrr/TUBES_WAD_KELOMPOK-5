@@ -7,12 +7,12 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="d-flex align-items-center gap-3 mb-4">
-                <a href="{{ route('tenant.menus.index') }}" class="btn btn-tc-ghost rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;" aria-label="Kembali ke daftar menu">
+                <a href="{{ route('tenant.menus.index') }}" class="btn btn-tc-ghost btn-tc-icon-circle" aria-label="Kembali ke daftar menu">
                     <i class="bi bi-arrow-left"></i>
                 </a>
                 <div>
                     <h1 class="tc-display h4 fw-bold mb-0">{{ isset($menu) ? 'Ubah Data Menu' : 'Tambah Menu Baru' }}</h1>
-                    <p class="text-secondary small mb-0">Foto menu diunggah otomatis ke Cloudinary.</p>
+                    <p class="text-secondary small mb-0">Lengkapi nama, kategori, harga, stok, dan foto hidangan gerai Anda.</p>
                 </div>
             </div>
 
@@ -35,7 +35,7 @@
                                      style="width: 200px; height: 135px;"
                                      alt="Pratinjau foto menu">
                                 <div class="flex-grow-1 w-100">
-                                    <input type="file" id="image" name="image" class="form-control mb-2" accept="image/*" onchange="previewImage(event)" {{ isset($menu) ? '' : 'required' }}>
+                                    <input type="file" id="image" name="image" class="form-control mb-2" accept="image/*" data-image-preview="#imagePreview" {{ isset($menu) ? '' : 'required' }}>
                                     <div class="form-text mb-0">Format JPG, PNG, atau GIF. Ukuran maksimal 2 MB.</div>
                                     @error('image') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
@@ -91,17 +91,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-    function previewImage(event) {
-        if (!event.target.files || !event.target.files[0]) return;
-        var reader = new FileReader();
-        reader.onload = function() {
-            document.getElementById('imagePreview').src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-</script>
-@endpush
 @endsection

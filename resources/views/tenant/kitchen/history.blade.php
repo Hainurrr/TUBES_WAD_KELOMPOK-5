@@ -19,18 +19,12 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success border-0 rounded-4 mb-4">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger border-0 rounded-4 mb-4">{{ session('error') }}</div>
-    @endif
+    <x-flash-alerts />
 
-    {{-- Bento Summary & Date Filter --}}
     <div class="row g-3 mb-4">
         <div class="col-lg-5">
             <div class="tc-card-dark p-4 h-100 d-flex flex-column justify-content-between">
-                <span class="small fw-semibold" style="color: #CBD5E1;">Total Pendapatan (Sesuai Filter)</span>
+                <span class="small fw-semibold tc-dark-copy">Total Pendapatan (Sesuai Filter)</span>
                 <div class="tc-mono fw-bold mt-2 mb-1" style="font-size: clamp(1.65rem, 2.8vw, 2.25rem);">
                     Rp {{ number_format($totalRevenue, 0, ',', '.') }}
                 </div>
@@ -59,7 +53,6 @@
         </div>
     </div>
 
-    {{-- Sales Table --}}
     <div class="tc-table-wrap">
         <div class="table-responsive">
             <table class="table tc-table">
@@ -110,7 +103,6 @@
     </div>
 </div>
 
-{{-- Manual Walk-in Order Modal --}}
 <div class="modal fade" id="manualOrderModal" tabindex="-1" aria-labelledby="manualOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 p-2" style="border-radius: 24px;">
@@ -129,7 +121,7 @@
                     <div class="mb-2">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <label class="form-label mb-0">Daftar Menu</label>
-                            <button type="button" class="btn btn-tc-ghost btn-sm py-1 px-3" onclick="addManualItem()">+ Tambah Baris</button>
+                            <button type="button" class="btn btn-tc-ghost btn-sm py-1 px-3" data-add-manual-item>+ Tambah Baris</button>
                         </div>
                         <div id="manual-items-container">
                             <div class="row g-2 mb-2 item-row">
@@ -158,51 +150,4 @@
         </div>
     </div>
 </div>
-
-@push('scripts')
-<script>
-    let itemIndex = 1;
-    function addManualItem() {
-        const container = document.getElementById('manual-items-container');
-        const firstRow = container.querySelector('.item-row');
-        const newRow = firstRow.cloneNode(true);
-        newRow.innerHTML = newRow.innerHTML.replace(/items\[0\]/g, `items[${itemIndex}]`);
-        newRow.querySelector('select').value = '';
-        newRow.querySelector('input').value = '1';
-        container.appendChild(newRow);
-        itemIndex++;
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const year = new Date().getFullYear();
-        const apiUrl = `https://api-harilibur.vercel.app/api?year=${year}`;
-        const normalizeDate = (dateStr) => {
-            const parts = dateStr.split('-');
-            if (parts.length !== 3) return dateStr;
-            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-        };
-
-        fetch(apiUrl)
-            .then(response => response.json())
-            .then(data => {
-                const holidays = {};
-                data.forEach(h => { holidays[normalizeDate(h.holiday_date)] = h.holiday_name; });
-
-                document.querySelectorAll('.order-date').forEach(el => {
-                    const dateStr = el.getAttribute('data-date');
-                    if (holidays[dateStr]) {
-                        const oldBadge = el.querySelector('.badge-holiday');
-                        if (oldBadge) oldBadge.remove();
-                        const badge = document.createElement('span');
-                        badge.className = 'tc-badge tc-badge-amber ms-2 badge-holiday';
-                        badge.innerHTML = `<i class="bi bi-calendar-event"></i>${holidays[dateStr]}`;
-                        badge.title = 'Hari Libur Nasional';
-                        el.appendChild(badge);
-                    }
-                });
-            })
-            .catch(() => {});
-    });
-</script>
-@endpush
 @endsection

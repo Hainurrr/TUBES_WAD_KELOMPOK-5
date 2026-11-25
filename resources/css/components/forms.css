@@ -1,0 +1,101 @@
+/* Form Controls, Tabs & Quantity Steppers */
+
+.form-control,
+.form-select {
+  border-radius: var(--tc-r-control);
+  border: 1.5px solid var(--tc-border);
+  padding: 0.65rem 0.95rem;
+  font-size: 0.95rem;
+  color: var(--tc-ink);
+  background-color: var(--tc-surface);
+  transition: border-color 180ms var(--tc-ease), box-shadow 180ms var(--tc-ease);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--tc-crimson);
+  box-shadow: 0 0 0 3px rgba(185, 17, 46, 0.14);
+}
+
+.form-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--tc-ink);
+  margin-bottom: 0.4rem;
+}
+
+.tc-auth-tabs {
+  background-color: var(--tc-surface-muted);
+  border-radius: var(--tc-r-pill);
+  padding: 0.25rem;
+}
+
+.tc-auth-tabs .nav-link {
+  border-radius: var(--tc-r-pill);
+  color: var(--tc-ink-secondary);
+  background-color: transparent;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  transition: background-color 180ms var(--tc-ease), color 180ms var(--tc-ease);
+}
+
+.tc-auth-tabs .nav-link.active {
+  background-color: var(--tc-obsidian);
+  color: #FFFFFF;
+}
+
+/* Reusable Quantity Stepper */
+.tc-qty-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--tc-r-pill);
+  border: 1px solid var(--tc-border);
+  background-color: var(--tc-surface);
+  flex-shrink: 0;
+}
+
+.tc-qty-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  padding: 0;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tc-qty-btn-minus {
+  background-color: var(--tc-surface-muted);
+  color: var(--tc-ink);
+}
+
+.tc-qty-btn-plus {
+  background-color: var(--tc-crimson);
+  color: #FFFFFF;
+}
+
+.tc-qty-input {
+  width: 30px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: none;
+}
+
+.tc-qty-input:focus {
+  box-shadow: none;
+}
+
+/* Rating Star Input */
+.tc-rating-input {
+  color: var(--tc-amber);
+  cursor: pointer;
+}

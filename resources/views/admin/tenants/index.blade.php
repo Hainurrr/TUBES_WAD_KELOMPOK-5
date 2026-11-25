@@ -19,18 +19,13 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success border-0 rounded-4 alert-dismissible fade show mb-4" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
-        </div>
-    @endif
+    <x-flash-alerts />
 
     <div class="tc-table-wrap">
         <div class="p-3 p-md-4 border-bottom bg-white">
             <div style="max-width: 380px;">
                 <label for="tenantSearchInput" class="visually-hidden">Cari tenant</label>
-                <input type="text" id="tenantSearchInput" class="form-control" placeholder="Cari nama tenant, pemilik, atau area kantin...">
+                <input type="text" id="tenantSearchInput" data-table-filter="#adminTenantsTable" class="form-control" placeholder="Cari nama tenant, pemilik, atau area kantin...">
             </div>
         </div>
 
@@ -48,7 +43,7 @@
                 </thead>
                 <tbody>
                     @forelse($tenants as $tenant)
-                        <tr class="tenant-row">
+                        <tr class="tenant-row" data-filter-row>
                             <td class="ps-4">
                                 <div class="d-flex align-items-center gap-3">
                                     @if($tenant->banner_image)
@@ -112,19 +107,4 @@
         @endif
     </div>
 </div>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const input = document.getElementById('tenantSearchInput');
-        if (!input) return;
-        input.addEventListener('input', function() {
-            const q = this.value.toLowerCase().trim();
-            document.querySelectorAll('#adminTenantsTable tbody .tenant-row').forEach(function(row) {
-                row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-            });
-        });
-    });
-</script>
-@endpush
 @endsection

@@ -16,7 +16,7 @@
                     <i class="bi bi-star-fill fs-4"></i>
                 </div>
                 <div>
-                    <span class="small d-block" style="color: #CBD5E1;">Rata-rata Penilaian</span>
+                    <span class="small d-block tc-dark-copy">Rata-rata Penilaian</span>
                     <div class="tc-mono fw-bold fs-3 text-white">
                         {{ number_format($reviews->avg('rating') ?? 0, 1) }} <span class="fs-6 fw-normal" style="color: #94A3B8;">/ 5.0</span>
                     </div>
@@ -66,14 +66,7 @@
                             <td class="ps-4 text-secondary small tc-num">{{ $review->created_at->format('d M Y') }}</td>
                             <td class="fw-semibold">{{ $review->user->name ?? 'Pelanggan' }}</td>
                             <td><span class="tc-badge tc-badge-neutral">{{ $review->menu->name ?? 'Menu Terhapus' }}</span></td>
-                            <td>
-                                <span class="d-inline-flex align-items-center gap-1" style="color: var(--tc-amber);">
-                                    @for($i=1; $i<=5; $i++)
-                                        <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }} small"></i>
-                                    @endfor
-                                    <span class="tc-mono small text-dark ms-1">({{ $review->rating }})</span>
-                                </span>
-                            </td>
+                            <td><x-rating-stars :rating="$review->rating" :show-value="true" size-class="small" /></td>
                             <td class="pe-4 small text-secondary">{{ \Illuminate\Support\Str::limit($review->comment, 110) }}</td>
                         </tr>
                     @empty

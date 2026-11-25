@@ -1,0 +1,40 @@
+/* Global Obsidian Footer */
+
+.tc-footer {
+  background-color: var(--tc-obsidian);
+  color: var(--tc-on-dark-muted);
+  border-top: 1px solid var(--tc-obsidian-border);
+  padding: 3.5rem 0 2.25rem;
+}
+
+.tc-footer h6 {
+  font-family: var(--tc-font-display);
+  font-weight: 800;
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  margin-bottom: 1rem;
+}
+
+.tc-footer a {
+  color: var(--tc-on-dark-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 180ms var(--tc-ease);
+}
+
+.tc-footer a:hover {
+  color: #FFFFFF;
+}
+
+.tc-footer-copy {
+  color: var(--tc-on-dark-muted);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.tc-footer-bottom {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94A3B8;
+}

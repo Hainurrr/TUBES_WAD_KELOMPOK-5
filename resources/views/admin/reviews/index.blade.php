@@ -14,12 +14,7 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success border-0 rounded-4 alert-dismissible fade show mb-4" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
-        </div>
-    @endif
+    <x-flash-alerts />
 
     <div class="tc-card p-3 p-md-4 mb-4">
         <form action="{{ route('admin.reviews.index') }}" method="GET" class="row g-3 align-items-end">
@@ -55,13 +50,7 @@
                                 <div class="fw-bold text-dark small">{{ $review->menu->tenant->name ?? 'Tenant Dihapus' }}</div>
                                 <div class="small text-secondary">{{ $review->menu->name ?? 'Menu Dihapus' }}</div>
                             </td>
-                            <td>
-                                <span class="d-inline-flex align-items-center gap-1" style="color: var(--tc-amber);">
-                                    @for($i=1; $i<=5; $i++)
-                                        <i class="bi {{ $i <= $review->rating ? 'bi-star-fill' : 'bi-star' }} small"></i>
-                                    @endfor
-                                </span>
-                            </td>
+                            <td><x-rating-stars :rating="$review->rating" size-class="small" /></td>
                             <td class="small text-secondary">{{ \Illuminate\Support\Str::limit($review->comment, 75) }}</td>
                             <td class="text-end pe-4">
                                 <form action="{{ route('admin.reviews.destroy', $review->id_review) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus ulasan ini secara permanen?');">

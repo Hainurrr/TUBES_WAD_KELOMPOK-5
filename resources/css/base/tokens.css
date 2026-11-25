@@ -1,0 +1,53 @@
+:root {
+  /* Dark stage & obsidian shell */
+  --tc-obsidian: #101820;
+  --tc-obsidian-elevated: #18222D;
+  --tc-obsidian-border: rgba(255, 255, 255, 0.11);
+  --tc-on-dark: #F8FAFC;
+  --tc-on-dark-muted: #CBD5E1;
+
+  /* Light sheet & operate surfaces */
+  --tc-canvas: #F5F6F8;
+  --tc-surface: #FFFFFF;
+  --tc-surface-muted: #F1F3F6;
+  --tc-border: #E2E6EC;
+  --tc-border-strong: #CBD2DC;
+  --tc-ink: #101820;
+  --tc-ink-secondary: #4B5563;
+  --tc-ink-muted: #64748B;
+
+  /* Brand crimson & semantic states */
+  --tc-crimson: #B9112E;
+  --tc-crimson-hover: #960D24;
+  --tc-crimson-soft: #FDF2F4;
+
+  --tc-emerald: #0B7A50;
+  --tc-emerald-hover: #08613F;
+  --tc-emerald-soft: #ECFDF5;
+  --tc-emerald-ink: #065F46;
+
+  --tc-amber: #F59E0B;
+  --tc-amber-soft: #FEF3C7;
+  --tc-amber-ink: #92400E;
+
+  --tc-danger: #DC2626;
+  --tc-danger-soft: #FEF2F2;
+  --tc-danger-ink: #991B1B;
+
+  /* Typography */
+  --tc-font-display: "Archivo", system-ui, -apple-system, sans-serif;
+  --tc-font-sans: "Figtree", system-ui, -apple-system, sans-serif;
+  --tc-font-mono: "Chivo Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Concentric radii & shadows */
+  --tc-r-sheet: 36px;
+  --tc-r-bento: 28px;
+  --tc-r-card: 22px;
+  --tc-r-control: 14px;
+  --tc-r-pill: 999px;
+
+  --tc-shadow-sm: 0 2px 8px rgba(16, 24, 32, 0.05);
+  --tc-shadow-md: 0 10px 28px rgba(16, 24, 32, 0.08);
+  --tc-shadow-lg: 0 20px 44px rgba(16, 24, 32, 0.14);
+  --tc-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}

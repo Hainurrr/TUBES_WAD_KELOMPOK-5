@@ -19,6 +19,7 @@
 <body onload="window.print()">
     
     <div class="text-center mb-4">
+        <div class="mb-2"><x-brand-logo :size="48" /></div>
         <h2 class="fw-bold mb-2">TELYUCAN</h2>
         <p class="mb-2">{{ $order->tenant->name }}</p>
         <p>{{ $order->tenant->address ?? 'Telkom University' }}</p>
@@ -39,7 +40,7 @@
         </div>
         <div class="d-flex mb-2">
             <span>Pembayaran</span>
-            <span>QRIS / Tunai</span>
+            <span>Non-Tunai / Tunai</span>
         </div>
     </div>
 
@@ -60,7 +61,6 @@
         <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
     </div>
 
-    <!-- QR Code untuk Verifikasi Pesanan (API: goqr.me) -->
     <div class="text-center mb-4">
         <p class="fw-bold mb-2">Scan QR untuk Verifikasi:</p>
         @php

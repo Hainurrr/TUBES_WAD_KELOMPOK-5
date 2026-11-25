@@ -1,0 +1,65 @@
+/* Operate Page Banners, Sweeping Sheets & Focused Checkout Flows */
+
+.tc-page-banner {
+  background-color: var(--tc-obsidian);
+  color: #FFFFFF;
+  padding: 2rem 0 3.75rem;
+}
+
+.tc-page-banner h1,
+.tc-page-banner h2 {
+  font-family: var(--tc-font-display);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #FFFFFF;
+}
+
+.tc-operate-sheet {
+  background-color: var(--tc-canvas);
+  border-radius: var(--tc-r-sheet) var(--tc-r-sheet) 0 0;
+  margin-top: -2rem;
+  padding: 2.25rem 0 4rem;
+  position: relative;
+  z-index: 2;
+}
+
+.tc-flow-wrap {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem 7.5rem;
+}
+
+.tc-sticky-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--tc-surface);
+  border-top: 1px solid var(--tc-border);
+  box-shadow: 0 -8px 28px rgba(16, 24, 32, 0.08);
+  padding: 1rem 0;
+  z-index: 1030;
+}
+
+.tc-loading-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 32, 0.82);
+  z-index: 9999;
+}
+
+.tc-loading-overlay.is-visible {
+  display: block;
+}
+
+.tc-toast-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 92%;
+  max-width: 420px;
+  border-radius: 18px;
+}

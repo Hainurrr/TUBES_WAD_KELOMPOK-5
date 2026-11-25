@@ -14,7 +14,7 @@
         h2 {
             text-align: center;
             margin-bottom: 20px;
-            color: #800000; /* Maroon branding kept for title */
+            color: #800000;
         }
         table {
             width: 100%;

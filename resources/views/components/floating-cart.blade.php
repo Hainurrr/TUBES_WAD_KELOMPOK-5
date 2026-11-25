@@ -2,8 +2,8 @@
     @php
         $totalQty = 0;
         $totalPrice = 0;
-        foreach(session('cart') as $tenant) {
-            foreach($tenant['items'] as $item) {
+        foreach (session('cart') as $tenant) {
+            foreach ($tenant['items'] as $item) {
                 $totalQty += $item['qty'];
                 $totalPrice += $item['price'] * $item['qty'];
             }
@@ -11,11 +11,10 @@
     @endphp
 
     <div class="tc-floating-cart-wrap">
-        {{-- Cart Popover --}}
         <div id="cartPopup" class="tc-cart-popover d-none">
             <div class="px-4 py-3 border-bottom sticky-top bg-white d-flex justify-content-between align-items-center">
                 <h5 class="tc-display fw-bold mb-0 fs-6">Keranjang Pesanan</h5>
-                <button type="button" onclick="toggleCart()" class="btn-close" aria-label="Tutup keranjang"></button>
+                <button type="button" data-cart-toggle class="btn-close" aria-label="Tutup keranjang"></button>
             </div>
 
             <div class="p-3 px-4">
@@ -31,35 +30,7 @@
                                     <div class="tc-mono text-muted" style="font-size: 0.78rem;">Rp {{ number_format($item['price'] * $item['qty'], 0, ',', '.') }}</div>
                                 </div>
 
-                                <div class="d-inline-flex align-items-center gap-1 p-1 rounded-pill border bg-white flex-shrink-0">
-                                    <form action="{{ route('cart.update') }}" method="POST" class="m-0">
-                                        @csrf
-                                        <input type="hidden" name="id_menu" value="{{ $menuId }}">
-                                        <input type="hidden" name="action" value="decrease">
-                                        <button type="submit" class="btn btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center border-0" style="width: 24px; height: 24px; background: var(--tc-surface-muted);" aria-label="Kurangi">
-                                            <i class="bi bi-dash"></i>
-                                        </button>
-                                    </form>
-
-                                    <form action="{{ route('cart.update') }}" method="POST" class="m-0">
-                                        @csrf
-                                        <input type="hidden" name="id_menu" value="{{ $menuId }}">
-                                        <input type="hidden" name="action" value="set">
-                                        <input type="number" name="qty" value="{{ $item['qty'] }}" min="1"
-                                               class="form-control form-control-sm text-center fw-bold tc-mono p-0 border-0 bg-transparent shadow-none"
-                                               style="width: 30px; height: 24px; font-size: 0.85rem;"
-                                               onchange="this.form.submit()" aria-label="Jumlah {{ $item['name'] }}">
-                                    </form>
-
-                                    <form action="{{ route('cart.update') }}" method="POST" class="m-0">
-                                        @csrf
-                                        <input type="hidden" name="id_menu" value="{{ $menuId }}">
-                                        <input type="hidden" name="action" value="increase">
-                                        <button type="submit" class="btn btn-sm rounded-circle p-0 d-flex align-items-center justify-content-center border-0 text-white" style="width: 24px; height: 24px; background: var(--tc-crimson);" aria-label="Tambah">
-                                            <i class="bi bi-plus"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                <x-qty-stepper :menu-id="$menuId" :qty="$item['qty']" :item-name="$item['name']" />
                             </div>
                         @endforeach
                     </div>
@@ -77,8 +48,7 @@
             </div>
         </div>
 
-        {{-- Floating Obsidian Trigger --}}
-        <button type="button" onclick="toggleCart()" class="tc-cart-trigger" aria-expanded="false" aria-controls="cartPopup">
+        <button type="button" data-cart-toggle class="tc-cart-trigger" aria-expanded="false" aria-controls="cartPopup">
             <span class="tc-cart-count">{{ $totalQty }}</span>
             <span class="text-start me-2">
                 <span class="d-block" style="font-size: 0.72rem; color: #CBD5E1; font-weight: 600;">Total Keranjang</span>
@@ -87,15 +57,4 @@
             <i id="cartIcon" class="bi bi-bag-check fs-5"></i>
         </button>
     </div>
-
-    <script>
-        function toggleCart() {
-            const popup = document.getElementById('cartPopup');
-            const trigger = document.querySelector('.tc-cart-trigger');
-            if (!popup) return;
-            const isHidden = popup.classList.contains('d-none');
-            popup.classList.toggle('d-none', !isHidden);
-            if (trigger) trigger.setAttribute('aria-expanded', String(isHidden));
-        }
-    </script>
 @endif

@@ -1,0 +1,25 @@
+/* Split-Stage Auth Layout */
+
+.tc-auth-shell {
+  min-height: 100vh;
+  background-color: var(--tc-obsidian);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+}
+
+.tc-auth-stage {
+  padding: 3rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #FFFFFF;
+}
+
+.tc-auth-panel {
+  background-color: var(--tc-surface);
+  border-radius: var(--tc-r-sheet) 0 0 var(--tc-r-sheet);
+  padding: 3rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
