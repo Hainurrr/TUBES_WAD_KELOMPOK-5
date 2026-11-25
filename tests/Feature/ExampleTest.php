@@ -15,5 +15,17 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertStatus(200);
+        $response->assertSee('data-academic-notice', false);
+        $response->assertSee('Website Simulasi Tugas Kuliah');
+        $response->assertSee('Saya Mengerti, Lanjutkan');
+    }
+
+    public function test_login_page_includes_academic_notice_popup(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertStatus(200);
+        $response->assertSee('data-academic-notice', false);
+        $response->assertSee('Website Simulasi Tugas Kuliah');
     }
 }

@@ -10,6 +10,7 @@ import { initPaymentSnap } from './modules/payment-snap';
 import { initOrderReviews } from './modules/order-reviews';
 import { initTenantKitchen } from './modules/tenant-kitchen';
 import { initTenantOps } from './modules/tenant-ops';
+import { initAcademicNotice } from './modules/academic-notice';
 
 document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
@@ -23,4 +24,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initOrderReviews();
   initTenantKitchen();
   initTenantOps();
+  initAcademicNotice();
 });
