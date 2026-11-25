@@ -2,24 +2,25 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 class BadWordHelper
 {
-    /**
-     * Mengecek apakah teks mengandung kata kasar.
-     * Mengembalikan true jika ditemukan kata kasar.
-     */
     public static function check(string $text): bool
     {
-        $words = self::getWords();
-        $text = strtolower($text);
-        
-        // Pengecekan batas kata sederhana
-        foreach ($words as $bad) {
-            // Membersihkan simbol untuk pengecekan
-            $cleanText = preg_replace('/[^\p{L}\p{N}\s]/u', '', $text);
-            $tokens = explode(' ', $cleanText);
+        $normalized = mb_strtolower($text, 'UTF-8');
+        $cleanText = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $normalized) ?? '';
+        $tokens = preg_split('/\s+/u', trim($cleanText), -1, PREG_SPLIT_NO_EMPTY);
 
-            if (in_array($bad, $tokens)) {
+        if (empty($tokens)) {
+            return false;
+        }
+
+        $badWordSet = array_flip(self::getWords());
+
+        foreach ($tokens as $token) {
+            if (isset($badWordSet[$token])) {
                 return true;
             }
         }
@@ -27,13 +28,10 @@ class BadWordHelper
         return false;
     }
 
-    /**
-     * Daftar kata-kata kasar yang dilarang.
-     */
     private static function getWords(): array
     {
         return [
-            'anjing', 'babi', 'bangsat', 'goblok', 'tolol', 'banci', 'bencong', 
+            'anjing', 'babi', 'bangsat', 'goblok', 'tolol', 'banci', 'bencong',
             'bejad', 'bejat', 'bloon', 'bacot', 'bedebah', 'begundal', 'brengsek',
             'buduk', 'bukake', 'celeng', 'cibai', 'cibay', 'cocot', 'cok', 'cuk',
             'dancok', 'dancuk', 'dodol', 'entot', 'eweh', 'gemo', 'gigolo', 'gila',
@@ -45,35 +43,27 @@ class BadWordHelper
             'setan', 'sial', 'sialan', 'sinting', 'siti', 'sodok', 'sontoloyo',
             'tai', 'taik', 'tempek', 'tetek', 'titit', 'toket', 'ublag', 'udik',
             'fuck', 'shit', 'bitch', 'asshole', 'dick', 'pussy', 'whore', 'slut', 'bastard',
-            'kasar', 'jelek', 'bodoh'
+            'kasar', 'jelek', 'bodoh',
         ];
     }
 
-    /**
-     * Mengecek menggunakan API eksternal untuk kata kasar berbahasa Inggris.
-     * Menggunakan API Purgomalum (tanpa autentikasi).
-     */
     public static function checkOnline(string $text): bool
     {
-        try {
-            // Jika pengecekan lokal sudah menemukan, tidak perlu memanggil API
-            if (self::check($text)) {
-                return true;
-            }
+        if (self::check($text)) {
+            return true;
+        }
 
-            // Panggil API Purgomalum
-            $response = \Illuminate\Support\Facades\Http::timeout(3)
-                        ->get('https://www.purgomalum.com/service/containsprofanity', [
-                            'text' => $text
-                        ]);
+        try {
+            $response = Http::timeout(3)
+                ->get('https://www.purgomalum.com/service/containsprofanity', [
+                    'text' => $text,
+                ]);
 
             if ($response->successful()) {
-                // API mengembalikan string "true" atau "false"
-                return $response->body() === 'true';
+                return trim($response->body()) === 'true';
             }
-        } catch (\Exception $e) {
-            // Biarkan lewat jika API down, atau catat error
-            \Illuminate\Support\Facades\Log::warning('BadWord API Error: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::warning('Profanity filter service unavailable: ' . $e->getMessage());
         }
 
         return false;

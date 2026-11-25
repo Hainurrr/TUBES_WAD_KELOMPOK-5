@@ -3,233 +3,178 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Http\Requests\Tenant\StoreManualOrderRequest;
+use App\Models\Menu;
 use App\Models\Order;
 use App\Models\OrderDetail;
-use App\Models\Menu;
+use App\Services\HolidayService;
+use App\Services\OrderCheckoutService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class TenantOrderController extends Controller
 {
-    /**
-     * Menampilkan daftar pesanan masuk untuk dapur tenant.
-     */
-    public function index()
+    public function __construct(
+        private readonly OrderCheckoutService $checkoutService,
+        private readonly HolidayService $holidayService
+    ) {}
+
+    public function index(): View|RedirectResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return redirect()->route('home')->with('error', 'Akun Anda tidak terhubung dengan Tenant manapun.');
         }
-        $tenantId = Auth::user()->tenant->id_tenant;
 
-        // Ambil pesanan yang relevan untuk dapur
-        // MANPROSI_TELYUCAN_IMPROVEMENT - Hanya tampilkan pesanan yang sudah dibayar (paid)
-        $orders = Order::with(['user', 'orderDetails.menu'])
-            ->where('id_tenant', $tenantId)
-            ->whereIn('status', ['pending', 'cooking', 'ready'])
-            ->where('payment_status', 'paid')
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        $tenant = Auth::user()->tenant;
+        $orders = Order::forKitchen($tenant->id_tenant)->get();
 
         return view('tenant.kitchen.index', compact('orders', 'tenant'));
     }
 
-    /**
-     * Memperbarui status pesanan.
-     */
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(Request $request, int $id): JsonResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return response()->json(['success' => false, 'message' => 'Tenant tidak ditemukan.'], 403);
         }
-        $tenantId = Auth::user()->tenant->id_tenant;
-        $order = Order::where('id_tenant', $tenantId)->findOrFail($id);
 
-        $request->validate([
-            'status' => 'required|in:pending,cooking,ready,completed,cancelled'
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:pending,cooking,ready,completed,cancelled'],
         ]);
 
-        $order->status = $request->status;
-        $order->save();
+        $result = $this->checkoutService->updateKitchenOrderStatus(
+            $tenant->id_tenant,
+            $id,
+            $validated['status']
+        );
 
-        // Kirim notifikasi ke pelanggan
-        $order->user->notify(new \App\Notifications\OrderStatusUpdated($order));
-
-        return response()->json(['success' => true, 'message' => 'Status berhasil diperbarui']);
+        return response()->json([
+            'success' => $result['ok'],
+            'message' => $result['message'],
+        ], $result['status']);
     }
 
-    /**
-     * Menampilkan riwayat penjualan tenant dengan filter tanggal.
-     */
-    public function history(Request $request)
+    public function history(Request $request): View|RedirectResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return redirect()->route('home')->with('error', 'Akun Anda tidak terhubung dengan Tenant manapun.');
         }
-        $tenantId = Auth::user()->tenant->id_tenant;
-        
-        $query = Order::where('id_tenant', $tenantId)
-                      ->where('status', 'completed');
 
-        // Filter berdasarkan tanggal mulai
-        if ($request->has('start_date') && $request->start_date) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
+        $orders = Order::completedForTenant(
+            $tenant->id_tenant,
+            $request->input('start_date'),
+            $request->input('end_date')
+        )->get();
 
-        // Filter berdasarkan tanggal akhir
-        if ($request->has('end_date') && $request->end_date) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
-
-        $orders = $query->orderBy('created_at', 'desc')->get();
         $totalRevenue = $orders->sum('total_price');
-
-        // Ambil menu untuk dropdown tambah manual
-        $menus = Menu::where('id_tenant', $tenantId)->where('is_available', true)->get();
+        $menus = Menu::where('id_tenant', $tenant->id_tenant)
+            ->where('is_available', true)
+            ->get();
 
         return view('tenant.kitchen.history', compact('orders', 'totalRevenue', 'menus'));
     }
 
-    /**
-     * Export laporan penjualan ke PDF.
-     */
-    public function exportPdf(Request $request)
+    public function exportPdf(Request $request): View|RedirectResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return redirect()->route('home')->with('error', 'Akun Anda tidak terhubung dengan Tenant manapun.');
         }
-        $tenantId = Auth::user()->tenant->id_tenant;
-        
-        $query = Order::where('id_tenant', $tenantId)
-                      ->where('status', 'completed');
 
-        if ($request->has('start_date') && $request->start_date) {
-            $query->whereDate('created_at', '>=', $request->start_date);
-        }
+        $orders = Order::completedForTenant(
+            $tenant->id_tenant,
+            $request->input('start_date'),
+            $request->input('end_date')
+        )->get();
 
-        if ($request->has('end_date') && $request->end_date) {
-            $query->whereDate('created_at', '<=', $request->end_date);
-        }
-
-        $orders = $query->orderBy('created_at', 'desc')->get();
         $totalRevenue = $orders->sum('total_price');
-        $tenant = Auth::user()->tenant;
+        $holidays = $this->holidayService->getNationalHolidays();
 
-        // Ambil Data Hari Libur (Sisi Server) untuk PDF
-        $holidays = [];
-        try {
-            $year = date('Y'); // Gunakan tahun saat ini
-            // Gunakan timeout 3 detik agar tidak loading lama jika API bermasalah
-            $response = Http::timeout(3)->get("https://api-harilibur.vercel.app/api?year={$year}");
-            
-            if ($response->successful()) {
-                foreach ($response->json() as $h) {
-                    // Logika normalisasi tanggal (sama seperti JS: YYYY-MM-DD)
-                    // Kita gunakan fungsi date() untuk memastikan padding (contoh: 2026-1-1 menjadi 2026-01-01)
-                    $dateKey = date('Y-m-d', strtotime($h['holiday_date']));
-                    $holidays[$dateKey] = $h['holiday_name'];
-                }
-            }
-        } catch (\Exception $e) {
-            // Abaikan error API saat generate PDF agar fungsi utama tetap jalan
-        }
-        
         return view('tenant.kitchen.pdf', compact('orders', 'totalRevenue', 'tenant', 'holidays'));
     }
 
-    /**
-     * Toggle status buka/tutup toko tenant.
-     */
-    public function updateTenantStatus(Request $request)
+    public function updateTenantStatus(Request $request): JsonResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return response()->json(['success' => false, 'message' => 'Tenant tidak ditemukan.'], 403);
         }
 
-        $tenant = Auth::user()->tenant;
-        $tenant->is_open = $request->is_open;
+        $request->validate([
+            'is_open' => ['required', 'boolean'],
+        ]);
+
+        $tenant->is_open = $request->boolean('is_open');
         $tenant->save();
 
         return response()->json(['success' => true, 'message' => 'Status toko berhasil diperbarui.']);
     }
 
-    /**
-     * Menyimpan pesanan manual (Walk-in) ke riwayat.
-     */
-    public function storeManualHistory(Request $request)
+    public function storeManualHistory(StoreManualOrderRequest $request): RedirectResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return redirect()->back()->with('error', 'Tenant tidak ditemukan.');
         }
 
-        $request->validate([
-            'transaction_date' => 'required|date',
-            'items' => 'required|array',
-            'items.*.id_menu' => 'required|exists:menus,id_menu',
-            'items.*.qty' => 'required|integer|min:1',
-        ]);
+        $validated = $request->validated();
+        $tenantId = $tenant->id_tenant;
 
-        $tenantId = Auth::user()->tenant->id_tenant;
-        
-        DB::beginTransaction();
         try {
-            // Hitung total harga
-            $totalPrice = 0;
-            $orderStart = Order::where('id_tenant', $tenantId)->count() + 1;
-            $transactionGroup = 'TRX-' . $tenantId . '-' . time() . '-' . $orderStart;
+            DB::transaction(function () use ($validated, $tenantId) {
+                $totalPrice = 0;
+                $orderSequence = Order::where('id_tenant', $tenantId)->count() + 1;
+                $transactionGroup = 'TRX-' . $tenantId . '-' . time() . '-' . $orderSequence;
 
-            // Buat Order (Tanpa User / Walk-in)
-            $order = new Order();
-            $order->id_user = null; // Walk-in
-            $order->id_tenant = $tenantId;
-            $order->transaction_group = $transactionGroup;
-            $order->status = 'completed'; // Langsung selesai
-            $order->payment_status = 'paid'; // MANPROSI_TELYUCAN_IMPROVEMENT - Walk-in sudah dibayar
-            $order->total_price = 0; // Update nanti
-            $order->created_at = $request->transaction_date . ' ' . date('H:i:s'); // Pakai jam sekarang
-            $order->updated_at = now();
-            $order->save();
+                $order = new Order();
+                $order->id_user = null;
+                $order->id_tenant = $tenantId;
+                $order->transaction_group = $transactionGroup;
+                $order->status = Order::STATUS_COMPLETED;
+                $order->payment_status = Order::PAYMENT_PAID;
+                $order->total_price = 0;
+                $order->created_at = $validated['transaction_date'] . ' ' . date('H:i:s');
+                $order->updated_at = now();
+                $order->save();
 
-            foreach ($request->items as $item) {
-                $menu = Menu::find($item['id_menu']);
-                $subtotal = $menu->price * $item['qty'];
-                $totalPrice += $subtotal;
+                foreach ($validated['items'] as $item) {
+                    // Cegah cross-tenant IDOR: pastikan menu milik tenant yang sedang login
+                    $menu = Menu::where('id_tenant', $tenantId)->findOrFail($item['id_menu']);
+                    $qty = (int) $item['qty'];
+                    $subtotal = $menu->price * $qty;
+                    $totalPrice += $subtotal;
 
-                OrderDetail::create([
-                    'id_order' => $order->id_order,
-                    'id_menu' => $menu->id_menu,
-                    'qty' => $item['qty'],
-                    'subtotal' => $subtotal,
-                ]);
-            }
+                    OrderDetail::create([
+                        'id_order' => $order->id_order,
+                        'id_menu' => $menu->id_menu,
+                        'qty' => $qty,
+                        'subtotal' => $subtotal,
+                    ]);
+                }
 
-            $order->total_price = $totalPrice;
-            $order->save();
+                $order->total_price = $totalPrice;
+                $order->save();
+            });
 
-            DB::commit();
             return redirect()->back()->with('success', 'Riwayat pesanan berhasil ditambahkan.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal menyimpan pesanan: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            return redirect()->back()->with('error', 'Gagal menyimpan pesanan. Pastikan semua menu milik gerai Anda.');
         }
     }
 
-    /**
-     * Menghapus riwayat pesanan.
-     */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return redirect()->back()->with('error', 'Akses ditolak.');
         }
-        
-        $tenantId = Auth::user()->tenant->id_tenant;
-        $order = Order::where('id_tenant', $tenantId)->findOrFail($id);
-        
+
+        $order = Order::where('id_tenant', $tenant->id_tenant)->findOrFail($id);
         $order->delete();
 
         return redirect()->back()->with('success', 'Riwayat pesanan berhasil dihapus.');

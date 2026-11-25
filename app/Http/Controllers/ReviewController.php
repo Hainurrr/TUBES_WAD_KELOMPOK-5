@@ -2,159 +2,115 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Review;
+use App\Helpers\BadWordHelper;
+use App\Http\Requests\StoreReviewRequest;
+use App\Http\Requests\UpdateReviewRequest;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Review;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\BadWordHelper;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReviewController extends Controller
 {
-    /**
-     * Menyimpan ulasan baru dari pelanggan.
-     */
-    public function store(Request $request)
+    public function store(StoreReviewRequest $request): RedirectResponse
     {
-        $request->validate([
-            'id_order' => 'required|exists:orders,id_order',
-            'id_menu' => 'required|exists:menus,id_menu',
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
-        // Cek kata tidak pantas
-        if (BadWordHelper::checkOnline($request->comment)) {
+        if (BadWordHelper::checkOnline($validated['comment'])) {
             return redirect()->back()->with('error', 'Komentar mengandung kata tidak pantas!');
         }
 
-        $user = Auth::user();
+        $userId = (int) Auth::id();
 
-        // Validasi keamanan: pastikan user benar-benar membeli menu ini
-        $order = Order::where('id_order', $request->id_order)
-                      ->where('id_user', $user->id_user) 
-                      ->where('status', 'completed')
-                      ->first();
+        $order = Order::where('id_order', $validated['id_order'])
+            ->ownedBy($userId)
+            ->where('status', Order::STATUS_COMPLETED)
+            ->first();
 
         if (!$order) {
-            \Illuminate\Support\Facades\Log::error("Review Store: Pesanan tidak valid. ID: {$request->id_order}, User: {$user->id_user}");
+            Log::warning("Review Store: Pesanan tidak valid. Order: {$validated['id_order']}, User: {$userId}");
             return redirect()->back()->with('error', 'Pesanan tidak valid.');
         }
 
-        // Cek apakah menu ada di dalam pesanan
         $hasItem = OrderDetail::where('id_order', $order->id_order)
-                              ->where('id_menu', $request->id_menu)
-                              ->exists();
-        
+            ->where('id_menu', $validated['id_menu'])
+            ->exists();
+
         if (!$hasItem) {
-            \Illuminate\Support\Facades\Log::error("Review Store: Menu tidak ada di pesanan. Order: {$order->id_order}, Menu: {$request->id_menu}");
             return redirect()->back()->with('error', 'Anda tidak membeli menu ini.');
         }
 
-        // Cek apakah sudah pernah mengulas
-        $existing = Review::where('id_order', $request->id_order)
-                          ->where('id_menu', $request->id_menu)
-                          ->first();
-        
-        if ($existing) {
-             return redirect()->back()->with('error', 'Anda sudah mengulas menu ini.');
+        $alreadyReviewed = Review::where('id_order', $order->id_order)
+            ->where('id_menu', $validated['id_menu'])
+            ->exists();
+
+        if ($alreadyReviewed) {
+            return redirect()->back()->with('error', 'Anda sudah mengulas menu ini.');
         }
 
         Review::create([
-            'id_user' => $user->id_user,
-            'id_menu' => $request->id_menu,
-            'id_order' => $request->id_order,
-            'rating' => $request->rating,
-            'comment' => $request->comment,
+            'id_user' => $userId,
+            'id_menu' => $validated['id_menu'],
+            'id_order' => $order->id_order,
+            'rating' => $validated['rating'],
+            'comment' => $validated['comment'],
         ]);
 
         return redirect()->back()->with('success', 'Terima kasih atas ulasan Anda!');
     }
 
-    /**
-     * Memperbarui ulasan pelanggan.
-     */
-    public function update(Request $request, $id)
+    public function update(UpdateReviewRequest $request, int $id): RedirectResponse
     {
-        $review = Review::where('id_user', Auth::user()->id_user)->findOrFail($id);
+        $review = Review::where('id_user', Auth::id())->findOrFail($id);
+        $validated = $request->validated();
 
-        $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|max:1000',
-        ]);
-
-        if (BadWordHelper::checkOnline($request->comment)) {
+        if (BadWordHelper::checkOnline($validated['comment'])) {
             return redirect()->back()->with('error', 'Komentar mengandung kata tidak pantas!');
         }
 
         $review->update([
-            'rating' => $request->rating,
-            'comment' => $request->comment,
+            'rating' => $validated['rating'],
+            'comment' => $validated['comment'],
         ]);
 
         return redirect()->back()->with('success', 'Ulasan berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus ulasan pelanggan.
-     */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
-        $review = Review::where('id_user', Auth::user()->id_user)->findOrFail($id);
+        $review = Review::where('id_user', Auth::id())->findOrFail($id);
         $review->delete();
 
         return redirect()->back()->with('success', 'Ulasan berhasil dihapus.');
     }
 
-    /**
-     * Menampilkan daftar ulasan untuk tenant.
-     */
-    public function indexTenant(Request $request)
+    public function indexTenant(Request $request): View|RedirectResponse
     {
-        if (!Auth::user()->tenant) {
+        $tenant = Auth::user()->tenant;
+        if (!$tenant) {
             return redirect()->route('home')->with('error', 'Akun Anda tidak terhubung dengan Tenant manapun.');
         }
-        $tenantId = Auth::user()->tenant->id_tenant;
 
-        $reviews = Review::whereHas('menu', function($q) use ($tenantId) {
-            $q->where('id_tenant', $tenantId);
-        })
-        ->with(['user', 'menu'])
-        ->when($request->menu_name, function($q) use ($request) {
-            $q->whereHas('menu', function($sq) use ($request) {
-                $sq->where('name', 'like', '%'.$request->menu_name.'%');
-            });
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+        $reviews = Review::forTenant($tenant->id_tenant, $request->input('menu_name'))
+            ->paginate(10);
 
         return view('tenant.reviews.index', compact('reviews'));
     }
 
-    /**
-     * Menampilkan semua ulasan untuk admin.
-     */
-    public function indexAdmin(Request $request)
+    public function indexAdmin(Request $request): View
     {
-        $reviews = Review::with(['user', 'menu.tenant'])
-            ->when($request->search, function($q) use ($request) {
-                 $q->whereHas('menu', function($sq) use ($request) {
-                     $sq->where('name', 'like', '%'.$request->search.'%');
-                 })
-                 ->orWhereHas('user', function($uq) use ($request) {
-                     $uq->where('name', 'like', '%'.$request->search.'%');
-                 });
-            })
-            ->orderBy('created_at', 'desc')
+        $reviews = Review::searchAdmin($request->input('search'))
             ->paginate(15);
 
         return view('admin.reviews.index', compact('reviews'));
     }
 
-    /**
-     * Menghapus ulasan oleh admin.
-     */
-    public function destroyAdmin($id)
+    public function destroyAdmin(int $id): RedirectResponse
     {
         $review = Review::findOrFail($id);
         $review->delete();
@@ -162,40 +118,52 @@ class ReviewController extends Controller
         return redirect()->back()->with('success', 'Ulasan berhasil dihapus oleh Admin.');
     }
 
-    /**
-     * Export semua ulasan ke CSV untuk admin.
-     */
-    public function exportAdmin()
+    public function exportAdmin(): StreamedResponse
     {
-        $reviews = Review::with(['user', 'menu.tenant'])->orderBy('created_at', 'desc')->get();
+        $reviews = Review::with(['user', 'menu.tenant'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $headers = [
-            "Content-type" => "text/csv",
-            "Content-Disposition" => "attachment; filename=laporan_ulasan-" . date('Y-m-d') . ".csv",
-            "Pragma" => "no-cache",
-            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-            "Expires" => "0"
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename=laporan_ulasan-' . date('Y-m-d') . '.csv',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
         ];
-        
-        $callback = function() use ($reviews) {
+
+        $callback = function () use ($reviews) {
             $file = fopen('php://output', 'w');
             fputcsv($file, ['ID', 'Tanggal', 'Pelanggan', 'Kantin', 'Menu', 'Rating', 'Komentar']);
-            
-            foreach($reviews as $review) {
+
+            foreach ($reviews as $review) {
                 fputcsv($file, [
                     $review->id_review,
                     $review->created_at->format('Y-m-d H:i'),
-                    $review->user->name ?? 'User Dihapus',
-                    $review->menu->tenant->name ?? 'Tenant Dihapus',
-                    $review->menu->name ?? 'Menu Dihapus',
+                    $this->sanitizeCsvCell($review->user->name ?? 'User Dihapus'),
+                    $this->sanitizeCsvCell($review->menu->tenant->name ?? 'Tenant Dihapus'),
+                    $this->sanitizeCsvCell($review->menu->name ?? 'Menu Dihapus'),
                     $review->rating,
-                    $review->comment
+                    $this->sanitizeCsvCell($review->comment),
                 ]);
             }
-            
+
             fclose($file);
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Mencegah CSV Formula Injection saat berkas dibuka di spreadsheet (Excel/Sheets).
+     */
+    private function sanitizeCsvCell(?string $value): string
+    {
+        $text = (string) ($value ?? '');
+        if ($text !== '' && preg_match('/^[=+\-@\t\r]/', $text)) {
+            return "'" . $text;
+        }
+
+        return $text;
     }
 }

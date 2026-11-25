@@ -2,79 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\MediaUploadService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Cloudinary\Cloudinary;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Menampilkan formulir untuk mengedit profil pengguna.
-     */
-    public function edit()
+    public function __construct(
+        private readonly MediaUploadService $mediaUpload
+    ) {}
+
+    public function edit(): View
     {
         $user = auth()->user();
+
         return view('profile.edit', compact('user'));
     }
 
-    /**
-     * Memperbarui informasi profil pengguna di penyimpanan.
-     */
-    public function update(Request $request)
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $user = auth()->user();
+        $user = $request->user();
+        $validated = $request->validated();
 
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id_user, 'id_user')],
-            'identity_number' => ['nullable', 'string', 'max:20'],
-            'avatar' => ['nullable', 'image', 'max:2048'], // Maksimal 2MB
-            'password' => ['nullable', 'confirmed', 'min:8'],
-        ]);
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->identity_number = $validated['identity_number'] ?? null;
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->identity_number = $request->identity_number;
-
-        // Upload ke Cloudinary menggunakan SDK langsung
         if ($request->hasFile('avatar')) {
-            // Inisialisasi Cloudinary dengan CLOUDINARY_URL dari Heroku
-            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
-            
-            // Upload file
-            $result = $cloudinary->uploadApi()->upload(
-                $request->file('avatar')->getRealPath(),
-                ['folder' => 'avatars']
-            );
-            
-            // Simpan URL aman ke database
-            $user->avatar = $result['secure_url'];
+            $user->avatar = $this->mediaUpload->uploadImage($request->file('avatar'), 'avatars');
         }
 
-        // Menangani Pembaruan Password
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
         }
 
         $user->save();
 
         return redirect()->route('profile.edit')->with('success', 'Profil berhasil diperbarui!');
-    }
-
-    /**
-     * Menyajikan file avatar secara langsung melalui PHP.
-     * Mengatasi masalah 404 pada hosting yang membatasi akses langsung file public/uploads.
-     */
-    public function getAvatar($filename)
-    {
-        $path = public_path('uploads/avatars/' . $filename);
-
-        if (!file_exists($path)) {
-            // Fallback jika file fisik tidak ketemu (misal karena ephemeral storage Heroku reset)
-            return redirect('https://ui-avatars.com/api/?name=User&background=800000&color=fff');
-        }
-
-        return response()->file($path);
     }
 }

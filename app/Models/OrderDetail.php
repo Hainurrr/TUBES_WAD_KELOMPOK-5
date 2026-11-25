@@ -10,12 +10,21 @@ class OrderDetail extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_detail';
+
     protected $fillable = [
         'id_order',
         'id_menu',
         'qty',
-        'subtotal'
+        'subtotal',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'qty' => 'integer',
+            'subtotal' => 'integer',
+        ];
+    }
 
     public function menu()
     {

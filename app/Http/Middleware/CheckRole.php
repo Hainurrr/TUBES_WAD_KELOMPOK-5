@@ -8,18 +8,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!auth()->check()) {
+        $user = $request->user();
+
+        if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Silakan login terlebih dahulu.'], 401);
+            }
+
             return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        if (auth()->user()->role !== $role) {
+        if (!in_array($user->role, $roles, true)) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Anda tidak memiliki akses ke sumber daya ini.'], 403);
+            }
+
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 

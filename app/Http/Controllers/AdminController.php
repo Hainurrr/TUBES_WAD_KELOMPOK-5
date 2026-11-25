@@ -2,22 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\Tenant;
+use Illuminate\View\View;
 
 class AdminController extends Controller
 {
-    /**
-     * Menampilkan Dashboard Admin.
-     */
-    public function dashboard()
+    public function dashboard(): View
     {
-        // Hitung statistik
-        $totalTenants = DB::table('tenants')->count();
-        $activeTenants = DB::table('tenants')->where('is_open', true)->count();
-        $inactiveTenants = DB::table('tenants')->where('is_open', false)->count();
+        $totalTenants = Tenant::count();
+        $activeTenants = Tenant::where('is_open', true)->count();
+        $inactiveTenants = max(0, $totalTenants - $activeTenants);
 
-        // Kirim data ke view
         return view('admin.dashboard', compact('totalTenants', 'activeTenants', 'inactiveTenants'));
     }
 }

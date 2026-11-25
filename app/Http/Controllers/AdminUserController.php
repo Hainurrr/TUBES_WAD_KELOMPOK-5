@@ -2,88 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\SaveUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class AdminUserController extends Controller
 {
-    /**
-     * Menampilkan daftar semua user.
-     */
-    public function index()
+    public function index(): View
     {
-        $users = User::all();
+        $users = User::orderBy('id_user', 'desc')->get();
+
         return view('admin.users.index', compact('users'));
     }
 
-    /**
-     * Menampilkan form tambah user baru.
-     */
-    public function create()
+    public function create(): View
     {
         return view('admin.users.create');
     }
 
-    /**
-     * Menyimpan user baru ke database.
-     */
-    public function store(Request $request)
+    public function store(SaveUserRequest $request): RedirectResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,tenant,customer',
-            'identity_number' => 'nullable|string|max:50',
-        ]);
+        $validated = $request->validated();
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'identity_number' => $request->identity_number,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'role' => $validated['role'],
+            'identity_number' => $validated['identity_number'] ?? null,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan!');
     }
 
-    /**
-     * Menampilkan form edit user.
-     */
-    public function edit(string $id)
+    public function edit(int $id): View
     {
         $user = User::findOrFail($id);
+
         return view('admin.users.edit', compact('user'));
     }
 
-    /**
-     * Memperbarui data user.
-     */
-    public function update(Request $request, string $id)
+    public function update(SaveUserRequest $request, int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id_user, 'id_user')],
-            'role' => 'required|in:admin,tenant,customer',
-            'identity_number' => 'nullable|string|max:50',
-            'password' => 'nullable|string|min:8|confirmed',
-        ]);
+        $validated = $request->validated();
 
         $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'role' => $request->role,
-            'identity_number' => $request->identity_number,
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role' => $validated['role'],
+            'identity_number' => $validated['identity_number'] ?? null,
         ];
 
-        // Update password jika diisi
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+        if (!empty($validated['password'])) {
+            $data['password'] = Hash::make($validated['password']);
         }
 
         $user->update($data);
@@ -91,12 +65,14 @@ class AdminUserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus user dari database.
-     */
-    public function destroy(string $id)
+    public function destroy(int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
+
+        if ((int) $user->id_user === (int) auth()->id()) {
+            return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+        }
+
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus!');
